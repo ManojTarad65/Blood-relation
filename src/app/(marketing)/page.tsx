@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform, useInView, animate } from "framer-moti
 import { Shield, Activity, Network, ArrowRight, CheckCircle2, Lock, Users, ChevronDown, Check, Star, Database } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
-import Navbar from "@/components/layout/Navbar";
+
 
 // Local component for animated counter
 function AnimatedCounter({ from, to, duration = 2, suffix = "" }: { from: number, to: number, duration?: number, suffix?: string }) {
@@ -57,7 +57,7 @@ export default function LandingPage() {
         />
       </div>
 
-      <Navbar className="fixed top-0" />
+
 
       {/* ================================================
           1. HERO SECTION (Upgraded)

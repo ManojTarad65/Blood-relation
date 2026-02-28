@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Network, TreePine, LayoutDashboard, Settings, UserCircle, LogOut, Activity, Camera, Image as ImageIcon } from 'lucide-react'
+import { Network, TreePine, LayoutDashboard, Settings, UserCircle, LogOut, Activity, Camera, Image as ImageIcon, DollarSign, ShieldCheck } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import RouteTransition from '@/components/layout/RouteTransition'
@@ -21,13 +21,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }, [])
 
     return (
-        <div className="flex h-screen overflow-hidden bg-[#0B0F1A] font-outfit text-slate-50 relative selection:bg-indigo-500/30">
-
-            {/* Background Ambient Layers */}
-            <div className="fixed top-0 left-0 w-[800px] h-[800px] bg-indigo-500/5 rounded-full blur-[150px] -z-10 pointer-events-none" />
+        <div className="flex h-screen overflow-hidden bg-[#0F172A] font-outfit text-slate-50 relative selection:bg-indigo-500/30">
 
             {/* Sidebar - Desktop (Hidden on Mobile) */}
-            <aside className="hidden md:flex w-64 bg-[#0B0F1A]/80 backdrop-blur-2xl border-r border-white/5 flex-col transition-all z-20 shadow-[4px_0_24px_rgba(0,0,0,0.2)]">
+            <aside className="hidden md:flex w-64 bg-[#111827] border-r border-white/5 flex-col transition-all z-20 shadow-sm">
 
                 {/* Brand Area */}
                 <div className="px-6 py-8 flex items-center gap-3">
@@ -41,16 +38,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <nav className="flex-1 px-4 flex flex-col gap-1 overflow-y-auto">
                     <div className="px-3 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-widest mt-4">Platform</div>
                     <SidebarItem href="/dashboard" icon={<LayoutDashboard size={18} />} label="Overview" active={pathname === '/dashboard'} />
-                    <SidebarItem href="/trees" icon={<TreePine size={18} />} label="My Trees" active={pathname.startsWith('/trees')} />
+                    <SidebarItem href="/dashboard/trees" icon={<TreePine size={18} />} label="My Trees" active={pathname.startsWith('/dashboard/trees')} />
 
                     <div className="px-3 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-widest mt-8">Intelligence</div>
                     <SidebarItem href="/dashboard/health" icon={<Activity size={18} />} label="Health Insights" active={pathname === '/dashboard/health'} />
-                    <SidebarItem href="/memory-gallery" icon={<ImageIcon size={18} />} label="Memory Gallery" active={pathname === '/memory-gallery'} />
+                    <SidebarItem href="/dashboard/memory-gallery" icon={<ImageIcon size={18} />} label="Memory Gallery" active={pathname === '/dashboard/memory-gallery'} />
                     <SidebarItem href="/dashboard/archive" icon={<Camera size={18} />} label="Cultural Archive" active={pathname === '/dashboard/archive'} />
 
+
                     <div className="px-3 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-widest mt-8">Account</div>
-                    <SidebarItem href="/profile" icon={<UserCircle size={18} />} label="Profile" active={pathname === '/profile'} />
-                    <SidebarItem href="/settings" icon={<Settings size={18} />} label="Settings" active={pathname === '/settings'} />
+                    <SidebarItem href="/dashboard/pricing" icon={<DollarSign size={18} />} label="Pricing" active={pathname === '/dashboard/pricing'} />
+                    <SidebarItem href="/dashboard/profile" icon={<UserCircle size={18} />} label="Profile" active={pathname === '/dashboard/profile'} />
+                    <SidebarItem href="/dashboard/settings" icon={<Settings size={18} />} label="Settings" active={pathname === '/dashboard/settings'} />
                 </nav>
 
                 {/* User Card */}
@@ -82,7 +81,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </main>
 
             {/* Mobile Bottom Navigation */}
-            <nav className="md:hidden fixed bottom-0 left-0 w-full bg-[#0B0F1A]/90 backdrop-blur-xl border-t border-white/10 z-50 px-6 py-3 flex items-center justify-between pb-safe">
+            <nav className="md:hidden fixed bottom-0 left-0 w-full bg-[#111827] border-t border-white/10 z-50 px-6 py-3 flex items-center justify-between pb-safe shadow-[0_-4px_24px_rgba(0,0,0,0.2)]">
                 <MobileNavItem href="/dashboard" icon={<LayoutDashboard size={20} />} label="Home" active={pathname === '/dashboard'} />
                 <MobileNavItem href="/trees" icon={<TreePine size={20} />} label="Trees" active={pathname.startsWith('/trees')} />
                 <MobileNavItem href="/memory-gallery" icon={<ImageIcon size={20} />} label="Gallery" active={pathname === '/memory-gallery'} />
