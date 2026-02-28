@@ -68,7 +68,7 @@ export default function NewTreePage() {
                 }
 
                 // Success! Redirect to the newly created Tree.
-                router.push(`/trees/${treeData.id}`);
+                router.push(`/dashboard/trees/${treeData.id}`);
             }
 
         } catch (err: any) {
@@ -134,7 +134,7 @@ export default function NewTreePage() {
                             )}
                         </PrimaryButton>
                         <SubtleButton
-                            href="/trees"
+                            href="/dashboard/trees"
                             className="w-full sm:w-auto py-3 text-base justify-center"
                         >
                             Cancel

@@ -8,14 +8,17 @@ import { createClient } from '@/lib/supabase/client'
 import RouteTransition from '@/components/layout/RouteTransition'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-    const [userEmail, setUserEmail] = useState<string | null>(null)
+    const [userDisplay, setUserDisplay] = useState<string>('Loading...')
     const pathname = usePathname()
 
     useEffect(() => {
         const fetchUser = async () => {
             const supabase = createClient()
             const { data: { user } } = await supabase.auth.getUser()
-            if (user) setUserEmail(user.email ?? '')
+            if (user) {
+                const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'
+                setUserDisplay(name)
+            }
         }
         fetchUser()
     }, [])
@@ -52,14 +55,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     <SidebarItem href="/dashboard/settings" icon={<Settings size={18} />} label="Settings" active={pathname === '/dashboard/settings'} />
                 </nav>
 
-                {/* User Card */}
                 <div className="p-4 mt-auto">
                     <div className="flex items-center gap-3 px-3 py-3 rounded-xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.06] transition-colors cursor-pointer mb-2">
                         <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-bold border border-indigo-500/20">
-                            {userEmail?.charAt(0).toUpperCase() || '?'}
+                            {userDisplay.charAt(0).toUpperCase()}
                         </div>
                         <div className="flex flex-col overflow-hidden">
-                            <span className="text-sm font-medium text-slate-200 truncate">{userEmail || 'Loading...'}</span>
+                            <span className="text-sm font-medium text-slate-200 truncate">{userDisplay}</span>
                             <span className="text-[10px] text-indigo-400 font-mono tracking-widest uppercase mt-0.5">Free Plan</span>
                         </div>
                     </div>
@@ -83,9 +85,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {/* Mobile Bottom Navigation */}
             <nav className="md:hidden fixed bottom-0 left-0 w-full bg-[#111827] border-t border-white/10 z-50 px-6 py-3 flex items-center justify-between pb-safe shadow-[0_-4px_24px_rgba(0,0,0,0.2)]">
                 <MobileNavItem href="/dashboard" icon={<LayoutDashboard size={20} />} label="Home" active={pathname === '/dashboard'} />
-                <MobileNavItem href="/trees" icon={<TreePine size={20} />} label="Trees" active={pathname.startsWith('/trees')} />
-                <MobileNavItem href="/memory-gallery" icon={<ImageIcon size={20} />} label="Gallery" active={pathname === '/memory-gallery'} />
-                <MobileNavItem href="/profile" icon={<UserCircle size={20} />} label="Profile" active={pathname === '/profile'} />
+                <MobileNavItem href="/dashboard/trees" icon={<TreePine size={20} />} label="Trees" active={pathname.startsWith('/dashboard/trees')} />
+                <MobileNavItem href="/dashboard/memory-gallery" icon={<ImageIcon size={20} />} label="Gallery" active={pathname === '/dashboard/memory-gallery'} />
+                <MobileNavItem href="/dashboard/profile" icon={<UserCircle size={20} />} label="Profile" active={pathname === '/dashboard/profile'} />
             </nav>
         </div>
     )
@@ -95,7 +97,7 @@ function MobileNavItem({ href, icon, label, active }: { href: string, icon: Reac
     return (
         <Link
             href={href}
-            className={`flex flex-col items-center gap-1.5 transition-all
+            className={`flex flex-col items-center gap-1.5 transition-all p-2
                 ${active ? 'text-indigo-400 scale-110' : 'text-slate-500 hover:text-slate-300'}
             `}
         >

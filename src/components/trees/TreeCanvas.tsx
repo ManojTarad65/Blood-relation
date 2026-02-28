@@ -175,7 +175,7 @@ const TreeCanvas = React.memo(function TreeCanvas({ treeId, members, onRefresh }
             </ReactFlow>
 
             {/* Floating Action Button (Premium SaaS standard) */}
-            <Link href={`/dashboard/trees/${treeId}/member/new`} className="absolute bottom-6 right-6 md:bottom-10 md:right-10 z-30 group">
+            <Link href={`/dashboard/trees/${treeId}/member/new`} className="absolute bottom-24 right-6 md:bottom-10 md:right-10 z-30 group">
                 <div className="absolute inset-0 bg-indigo-500 rounded-full blur-[20px] opacity-20 group-hover:opacity-60 transition-opacity duration-300" />
                 <button className="w-14 h-14 bg-indigo-600 border border-indigo-400/50 rounded-full text-white shadow-xl flex items-center justify-center relative z-10 transform hover:-translate-y-1 transition-all">
                     <Plus size={24} />

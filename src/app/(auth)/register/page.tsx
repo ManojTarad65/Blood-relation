@@ -16,6 +16,15 @@ export default function RegisterPage({ searchParams }: { searchParams: { error?:
 
             <form className="animate-in flex flex-col w-full justify-center gap-4 text-slate-200">
                 <div className="flex flex-col gap-2">
+                    <label className="text-sm text-slate-400" htmlFor="full_name">Full Name</label>
+                    <input
+                        className="rounded-xl px-4 py-3 bg-slate-900/50 border border-slate-700/50 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 outline-none transition-all placeholder:text-slate-600"
+                        name="full_name"
+                        placeholder="John Doe"
+                        required
+                    />
+                </div>
+                <div className="flex flex-col gap-2 mt-2">
                     <label className="text-sm text-slate-400" htmlFor="email">Email</label>
                     <input
                         className="rounded-xl px-4 py-3 bg-slate-900/50 border border-slate-700/50 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 outline-none transition-all placeholder:text-slate-600"

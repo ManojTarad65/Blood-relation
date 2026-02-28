@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/client'
 import { TreePine, ArrowLeft, Settings, Share2, Download, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 import { useEffect, useState, useCallback } from 'react'
 import TreeCanvas from '@/components/trees/TreeCanvas'
 import { motion } from 'framer-motion'
@@ -48,9 +49,7 @@ export default function TreeViewerPage({ params }: { params: { id: string } }) {
 
             if (treeError || !treeData) {
                 console.error("Tree Fetch Error:", treeError)
-                setError("Tree not found or access denied.")
-                setLoading(false)
-                return
+                notFound() // Force Next.js 404 page boundary
             }
 
             // Step 2: Fetch members
@@ -100,7 +99,7 @@ export default function TreeViewerPage({ params }: { params: { id: string } }) {
                 </div>
                 <h1 className="text-2xl font-bold text-white mb-3 tracking-tight">Access Denied</h1>
                 <p className="text-slate-400 mb-8 max-w-xs">{error || "This tree does not exist or you don't have permission to view it."}</p>
-                <PrimaryButton href="/trees">
+                <PrimaryButton href="/dashboard/trees">
                     Return to My Forests
                 </PrimaryButton>
             </div>
@@ -118,7 +117,7 @@ export default function TreeViewerPage({ params }: { params: { id: string } }) {
                 className="absolute top-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] md:w-[calc(100%-3rem)] max-w-5xl h-16 flex items-center justify-between px-4 sm:px-5 bg-[#111827]/80 backdrop-blur-xl border border-white/10 rounded-xl z-40 shadow-xl"
             >
                 <div className="flex items-center gap-3 sm:gap-4">
-                    <Link href="/trees" className="p-2 -ml-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+                    <Link href="/dashboard/trees" className="p-2 -ml-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
                         <ArrowLeft size={18} />
                     </Link>
                     <div className="h-6 w-px bg-white/10 hidden sm:block mx-1" />
