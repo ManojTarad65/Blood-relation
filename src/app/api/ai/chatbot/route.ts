@@ -1,32 +1,27 @@
-import { streamText } from 'ai';
-import { googleAI } from '@/lib/ai/gemini';
-import { AI_SYSTEM_PROMPTS, getUserFamilyContext } from '@/lib/ai/prompts';
-
-// Allow streaming responses up to 30 seconds
-export const maxDuration = 30;
+import { getUserFamilyContext } from '@/lib/ai/prompts';
+import { ancestryChat } from '@/lib/ai/rootconnect-ai';
 
 export async function POST(req: Request) {
     try {
-        const { messages } = await req.json();
-        const context = await getUserFamilyContext();
+        const { message } = await req.json();
 
+        // Feed the unified user records into the AI Brain
+        const context = await getUserFamilyContext();
         const contextStr = `
 Family Trees: ${JSON.stringify(context.trees)}
 Family Members: ${JSON.stringify(context.members)}
 Memories: ${JSON.stringify(context.memories)}
 `;
 
-        const systemPrompt = `${AI_SYSTEM_PROMPTS.chatbot}\n\nUser's Family Context:\n${contextStr}`;
+        const resultText = await ancestryChat(message, contextStr);
 
-        const result = streamText({
-            model: googleAI('gemini-1.5-flash'),
-            system: systemPrompt,
-            messages,
+        return Response.json({
+            reply: resultText
         });
-
-        return result.toTextStreamResponse();
-    } catch (error: any) {
-        console.error("Chatbot API Error:", error);
-        return Response.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        console.error("Central AI Chatbot Error:", error);
+        return Response.json({
+            reply: "AI Intelligence Engine temporarily unavailable."
+        });
     }
 }

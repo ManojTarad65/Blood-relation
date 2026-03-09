@@ -66,7 +66,7 @@ export default function RegisterPage({ searchParams }: { searchParams: { error?:
 
             <div className="mt-8 text-center text-sm text-slate-400">
                 Already have an account?{' '}
-                <Link href="/login" className="text-purple-400 hover:text-purple-300 transition-colors font-medium">
+                <Link href="/auth/login" className="text-purple-400 hover:text-purple-300 transition-colors font-medium">
                     Sign in
                 </Link>
             </div>

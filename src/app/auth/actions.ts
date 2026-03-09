@@ -17,7 +17,7 @@ export async function login(formData: FormData) {
     const { error } = await supabase.auth.signInWithPassword(data)
 
     if (error) {
-        redirect('/login?error=' + encodeURIComponent(error.message))
+        redirect('/auth/login?error=' + encodeURIComponent(error.message))
     }
 
     revalidatePath('/', 'layout')
@@ -42,9 +42,16 @@ export async function signup(formData: FormData) {
     })
 
     if (error) {
-        redirect('/register?error=' + encodeURIComponent(error.message))
+        redirect('/auth/register?error=' + encodeURIComponent(error.message))
     }
 
     // usually redirect to a confirmation page or login with a success msg
-    redirect('/login?message=Check your email to verify your account.')
+    redirect('/auth/login?message=Check your email to verify your account.')
+}
+
+export async function logout() {
+    const supabase = await createClient()
+    await supabase.auth.signOut()
+    revalidatePath('/', 'layout')
+    redirect('/')
 }

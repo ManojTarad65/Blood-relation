@@ -27,32 +27,59 @@ export default function ChatbotPage() {
         scrollToBottom();
     }, [messages, isLoading]);
 
-    const handleSubmit = (e: FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
         if (!message.trim() || isLoading) return;
+
+        const userContent = message.trim();
 
         // Add user message to chat
         const newUserMessage: Message = {
             id: Date.now().toString(),
             role: 'user',
-            content: message.trim()
+            content: userContent
         };
+
+        // Prepare payload manually instead of requestMessages
 
         setMessages(prev => [...prev, newUserMessage]);
         setMessage(''); // Clear input
         setIsLoading(true); // Show typing indicator
 
-        // Simulate bot response placeholder
-        setTimeout(() => {
+        // Call the Groq API Route
+        try {
+            const res = await fetch("/api/ai/chatbot", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: userContent })
+            });
+
+            if (!res.ok) {
+                throw new Error("Failed to fetch from API");
+            }
+
+            const data = await res.json();
+
             const botResponse: Message = {
                 id: (Date.now() + 1).toString(),
                 role: 'bot',
-                content: "I'm currently running in mockup mode, but I am ready to analyze your genetic history and ancestral data!"
+                content: data.reply || "No response generated."
             };
+
             setMessages(prev => [...prev, botResponse]);
+
+        } catch (error) {
+            console.error(error);
+            const errorResponse: Message = {
+                id: (Date.now() + 1).toString(),
+                role: 'bot',
+                content: "AI service temporarily unavailable. Please try again."
+            };
+            setMessages(prev => [...prev, errorResponse]);
+        } finally {
             setIsLoading(false);
-        }, 1200);
+        }
     };
 
     return (
@@ -88,8 +115,8 @@ export default function ChatbotPage() {
                                 )}
 
                                 <div className={`px-5 py-3.5 text-sm whitespace-pre-wrap max-w-md shadow-md ${m.role === 'user'
-                                        ? 'bg-purple-600 text-white rounded-xl rounded-tr-sm'
-                                        : 'bg-zinc-800 text-white rounded-xl rounded-tl-sm border border-white/5'
+                                    ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-xl rounded-tr-sm'
+                                    : 'bg-zinc-800 text-white rounded-xl rounded-tl-sm border border-white/5'
                                     }`}>
                                     {m.content}
                                 </div>
@@ -112,10 +139,10 @@ export default function ChatbotPage() {
                             <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-zinc-800 text-slate-300 border border-white/10 mt-1">
                                 <Bot size={16} />
                             </div>
-                            <div className="bg-zinc-800 text-white border border-white/5 rounded-xl rounded-tl-sm px-5 py-4 text-sm flex items-center gap-1.5 shadow-md">
-                                <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1.4, delay: 0, ease: "easeInOut" }} className="w-1.5 h-1.5 bg-slate-400 rounded-full" />
-                                <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1.4, delay: 0.2, ease: "easeInOut" }} className="w-1.5 h-1.5 bg-slate-400 rounded-full" />
-                                <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1.4, delay: 0.4, ease: "easeInOut" }} className="w-1.5 h-1.5 bg-slate-400 rounded-full" />
+                            <div className="bg-zinc-800 text-slate-300 border border-white/5 rounded-xl rounded-tl-sm px-5 py-3.5 text-sm flex items-center gap-1 shadow-md font-medium">
+                                <motion.span animate={{ opacity: [0.4, 1, 0.4] }} transition={{ repeat: Infinity, duration: 1.5 }}>
+                                    Thinking...
+                                </motion.span>
                             </div>
                         </motion.div>
                     )}

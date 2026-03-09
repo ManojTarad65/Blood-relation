@@ -1,6 +1,3 @@
-'use client';
-
-import { motion } from 'framer-motion';
 import { Network } from 'lucide-react';
 import Link from 'next/link';
 import Navbar from '@/components/layout/Navbar';
@@ -15,7 +12,7 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
                 <div className="absolute top-[20%] right-[-10%] w-[40vw] h-[60vh] bg-cyan-600/5 rounded-full blur-[150px]" />
             </div>
 
-            <Navbar className="sticky top-0" />
+            {/* <Navbar className="sticky top-0" /> */}
 
             {/* Page Content */}
             <main className="flex-1 w-full relative z-10">
