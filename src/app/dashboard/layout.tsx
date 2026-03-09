@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Network, TreePine, LayoutDashboard, Settings, UserCircle, LogOut, Activity, Camera, Image as ImageIcon, DollarSign, ShieldCheck } from 'lucide-react'
+import { Network, TreePine, LayoutDashboard, Settings, UserCircle, LogOut, Activity, Camera, Image as ImageIcon, DollarSign, ShieldCheck, MessageSquare, Stethoscope, Dna } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import RouteTransition from '@/components/layout/RouteTransition'
@@ -47,6 +47,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     <SidebarItem href="/dashboard/health" icon={<Activity size={18} />} label="Health Insights" active={pathname === '/dashboard/health'} />
                     <SidebarItem href="/dashboard/memory-gallery" icon={<ImageIcon size={18} />} label="Memory Gallery" active={pathname === '/dashboard/memory-gallery'} />
                     <SidebarItem href="/dashboard/archive" icon={<Camera size={18} />} label="Cultural Archive" active={pathname === '/dashboard/archive'} />
+
+                    <div className="px-3 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-widest mt-8">AI Features</div>
+                    <SidebarItem href="/dashboard/ai/chatbot" icon={<MessageSquare size={18} />} label="AI Chatbot" active={pathname.startsWith('/dashboard/ai/chatbot')} />
+                    <SidebarItem href="/dashboard/ai/health" icon={<Dna size={18} />} label="Health Risk Predictor" active={pathname.startsWith('/dashboard/ai/health')} />
+                    <SidebarItem href="/dashboard/ai/advisor" icon={<Stethoscope size={18} />} label="Medical Advisor" active={pathname.startsWith('/dashboard/ai/advisor')} />
 
 
                     <div className="px-3 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-widest mt-8">Account</div>

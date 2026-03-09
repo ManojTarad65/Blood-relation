@@ -50,7 +50,7 @@ export function Card({ children, className = '', ...props }: React.ComponentProp
             {...props}
         >
             <div className="relative z-10 w-full h-full">
-                {children}
+                {children as React.ReactNode}
             </div>
         </motion.div>
     );
