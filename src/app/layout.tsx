@@ -22,6 +22,7 @@ export default function RootLayout({
         <div className="fixed top-0 left-0 right-0 h-96 bg-indigo-900/10 blur-[120px] pointer-events-none -z-10" />
         <div className="fixed bottom-0 right-0 w-[800px] h-[800px] bg-purple-900/10 blur-[150px] pointer-events-none -z-10" />
         <main className="relative z-0 min-h-screen flex flex-col">
+          <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
           <Navbar className="sticky top-0 w-full" />
           {children}
         </main>

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Check, Network, Zap, Shield, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 const TIERS = [
   {
@@ -60,6 +61,54 @@ const TIERS = [
 
 export default function PricingPage() {
   const [isYearly, setIsYearly] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleUpgrade = async (tier: any) => {
+    if(tier.id !== 'premium') return;
+
+    try {
+      setLoading(true);
+
+      const res = await fetch("/api/payment/create-order", {
+        method: "POST"
+      })
+
+      const order = await res.json()
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: "INR",
+        name: "RootConnect",
+        description: "Premium Plan",
+        order_id: order.id,
+        handler: async function (response: any) {
+          const verify = await fetch("/api/payment/verify", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(response)
+          })
+
+          const data = await verify.json()
+
+          if (data.success) {
+            alert("Payment successful 🎉")
+            window.location.reload()
+          }
+        }
+      }
+
+      const rzp = new window.Razorpay(options)
+      rzp.open()
+    } catch (error) {
+      alert("Checkout unavailable. Please try again.")
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div className="relative min-h-screen bg-[#0B0F19] text-white px-6 md:px-12 py-32 overflow-hidden">
@@ -153,16 +202,22 @@ export default function PricingPage() {
                 {tier.description}
               </p>
 
-              <Link
-                href="/register"
-                className={`w-full py-3 rounded-xl font-semibold text-center block transition ${
-                  tier.highlight
-                    ? 'bg-white text-black hover:bg-slate-200'
-                    : 'bg-white/10 hover:bg-white/20'
-                }`}
-              >
-                {tier.cta}
-              </Link>
+              {tier.highlight ? (
+                <button
+                  onClick={() => handleUpgrade(tier)}
+                  disabled={loading}
+                  className={`w-full py-3 rounded-xl font-semibold text-center block transition bg-white text-black hover:bg-slate-200 disabled:opacity-50`}
+                >
+                  {loading ? 'Processing...' : tier.cta}
+                </button>
+              ) : (
+                <Link
+                  href="/register"
+                  className={`w-full py-3 rounded-xl font-semibold text-center block transition bg-white/10 hover:bg-white/20`}
+                >
+                  {tier.cta}
+                </Link>
+              )}
 
               <div className="mt-10 border-t border-white/10 pt-8">
                 <ul className="flex flex-col gap-4 text-sm text-slate-300">

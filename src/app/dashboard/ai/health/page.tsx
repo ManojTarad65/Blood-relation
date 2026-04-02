@@ -20,7 +20,7 @@ export default function HealthPredictorPage() {
         setLoading(true)
         setError(null)
         try {
-            const res = await fetch('/api/ai/health-predictor', { method: 'POST' })
+            const res = await fetch('/api/ai/health-risk', { method: 'POST' })
             if (!res.ok) throw new Error('Failed to analyze health data')
             const data = await res.json()
             setResult(data)
