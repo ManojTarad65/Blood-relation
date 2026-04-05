@@ -8,7 +8,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useState, useEffect } from 'react'
-import { PrimaryButton } from '@/components/ui/LayoutBlocks'
 
 const memberSchema = z.object({
     // Basic Identity
@@ -65,7 +64,7 @@ export default function MemberForm({ treeId }: { treeId: string }) {
     const [globalError, setGlobalError] = useState<string | null>(null)
 
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<MemberFormValues>({
-        resolver: zodResolver(memberSchema as any), // bypass generic cast mappings
+        resolver: zodResolver(memberSchema as any), 
         defaultValues: {
             gender: 'unknown',
             parent_id: 'null',
@@ -155,7 +154,7 @@ export default function MemberForm({ treeId }: { treeId: string }) {
             if (error) throw error
 
             router.push(`/dashboard/trees/${treeId}`)
-            router.refresh() // Ensure server-side fetches grab the new family member.
+            router.refresh() 
 
         } catch (err: any) {
             console.error("Submission error:", err)
@@ -163,67 +162,65 @@ export default function MemberForm({ treeId }: { treeId: string }) {
         }
     }
 
-    // Standardized Input Row Component for visual consistency
     const InputBlock = ({ label, name, type = 'text', placeholder = '', registerFn, error }: any) => (
         <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-slate-300">{label}</label>
+            <label className="text-sm font-semibold text-white/50 tracking-wide uppercase text-[10px] ml-1">{label}</label>
             <input
                 type={type}
                 {...registerFn(name)}
                 placeholder={placeholder}
-                className="px-4 py-3 bg-[#0F172A] border border-white/10 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-400 outline-none transition-all placeholder:text-slate-600 shadow-sm [color-scheme:dark]"
+                className="px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl focus:bg-white/[0.05] focus:border-white/30 outline-none transition-all placeholder:text-white/20 text-white font-medium [color-scheme:dark]"
             />
-            {error && <span className="text-red-400 text-xs">{error}</span>}
+            {error && <span className="text-red-400 text-xs ml-1">{error}</span>}
         </div>
     )
 
-    // Standardized Checkbox Component
     const CheckboxBlock = ({ label, name, registerFn }: any) => (
-        <label className="flex items-center gap-3 p-3 bg-[#0F172A] border border-white/10 rounded-xl cursor-pointer hover:bg-white/5 transition-colors group">
+        <label className="flex items-center gap-3 p-4 bg-white/[0.03] border border-white/[0.08] rounded-xl cursor-pointer hover:bg-white/[0.05] transition-colors group select-none">
             <div className="relative flex items-center justify-center">
                 <input
                     type="checkbox"
                     {...registerFn(name)}
-                    className="peer appearance-none w-5 h-5 border border-white/20 rounded cursor-pointer checked:bg-indigo-500 checked:border-indigo-500 transition-colors"
+                    className="peer appearance-none w-5 h-5 border border-white/20 rounded cursor-pointer checked:bg-white checked:border-white transition-colors"
                 />
-                <svg className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                <svg className="absolute w-3 h-3 text-black opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
             </div>
-            <span className="text-sm font-medium text-slate-300 group-hover:text-white transition-colors">{label}</span>
+            <span className="text-sm font-medium text-white/50 group-hover:text-white transition-colors">{label}</span>
         </label>
     )
 
     return (
-        <div className="max-w-4xl mx-auto w-full font-outfit text-slate-50 relative pb-20">
+        <div className="max-w-4xl mx-auto w-full font-outfit relative">
 
             <div className="flex items-center gap-4 mb-8">
                 <Link
                     href={`/dashboard/trees/${treeId}`}
-                    className="p-2 hover:bg-[#111827] rounded-lg transition-colors text-slate-400 hover:text-white"
+                    className="p-2.5 hover:bg-white/[0.04] border border-transparent hover:border-white/10 rounded-xl transition-all text-white/40 hover:text-white"
                 >
-                    <ArrowLeft size={20} />
+                    <ArrowLeft size={18} />
                 </Link>
-                <div className="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl">
-                    <UserPlus className="text-indigo-400 w-8 h-8" />
+                <div className="p-3 bg-white/5 border border-white/10 text-white/60 rounded-xl">
+                    <UserPlus className="w-6 h-6" />
                 </div>
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-white">Add Relative</h1>
-                    <p className="text-sm text-slate-400">Expand your family tree with a new detailed entry</p>
+                    <h1 className="text-2xl font-bold tracking-tight text-white mb-1">Add Relative</h1>
+                    <p className="text-xs text-white/40 uppercase tracking-widest font-semibold">Expand your family tree with a new detailed entry</p>
                 </div>
             </div>
 
             {globalError && (
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm font-medium mb-6">
+                <div className="flex items-center gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm font-medium mb-6">
                     <AlertCircle size={18} className="shrink-0" />
                     <p>{globalError}</p>
                 </div>
             )}
 
-            <form onSubmit={handleSubmit(onSubmit)} className="bg-[#111827] border border-white/5 rounded-2xl p-6 md:p-10 flex flex-col gap-10 shadow-sm">
+            <form onSubmit={handleSubmit(onSubmit)} className="bg-white/[0.02] border border-white/[0.08] rounded-3xl p-6 md:p-10 flex flex-col gap-10 shadow-lg">
 
                 {/* --- BASIC IDENTITY SECTION --- */}
                 <section className="flex flex-col gap-6">
-                    <div className="flex items-center gap-2 border-b border-white/10 pb-3">
-                        <Info size={18} className="text-indigo-400" />
+                    <div className="flex items-center gap-2 border-b border-white/5 pb-4">
+                        <Info size={18} className="text-white/40" />
                         <h2 className="text-lg font-bold text-white tracking-tight">Basic Information</h2>
                     </div>
 
@@ -233,10 +230,10 @@ export default function MemberForm({ treeId }: { treeId: string }) {
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        <label className="text-sm font-medium text-slate-300">Relative Parent in Tree (Optional)</label>
+                        <label className="text-sm font-semibold text-white/50 tracking-wide uppercase text-[10px] ml-1">Relative Parent in Tree (Optional)</label>
                         <select
                             {...register('parent_id')}
-                            className="px-4 py-3 bg-[#0F172A] border border-white/10 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-400 outline-none transition-all text-slate-300 shadow-sm custom-select-arrow"
+                            className="px-4 py-3.5 bg-white/[0.03] border border-white/[0.08] rounded-xl focus:bg-white/[0.05] focus:border-white/30 outline-none transition-all text-white font-medium shadow-sm custom-select-arrow"
                         >
                             <option value="null">No Parent (Sets as a Root Node)</option>
                             {existingMembers.map((m) => (
@@ -254,10 +251,10 @@ export default function MemberForm({ treeId }: { treeId: string }) {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="flex flex-col gap-2">
-                            <label className="text-sm font-medium text-slate-300">Gender</label>
+                            <label className="text-sm font-semibold text-white/50 tracking-wide uppercase text-[10px] ml-1">Gender</label>
                             <select
                                 {...register('gender')}
-                                className="px-4 py-3 bg-[#0F172A] border border-white/10 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-400 outline-none transition-all text-slate-300 shadow-sm"
+                                className="px-4 py-3.5 bg-white/[0.03] border border-white/[0.08] rounded-xl focus:bg-white/[0.05] focus:border-white/30 outline-none transition-all text-white font-medium shadow-sm custom-select-arrow"
                             >
                                 <option value="unknown">Unknown</option>
                                 <option value="male">Male</option>
@@ -273,8 +270,8 @@ export default function MemberForm({ treeId }: { treeId: string }) {
 
                 {/* --- CONTACT INFO SECTION --- */}
                 <section className="flex flex-col gap-6">
-                    <div className="flex items-center gap-2 border-b border-white/10 pb-3">
-                        <MapPin size={18} className="text-indigo-400" />
+                    <div className="flex items-center gap-2 border-b border-white/5 pb-4">
+                        <MapPin size={18} className="text-white/40" />
                         <h2 className="text-lg font-bold text-white tracking-tight">Contact Information</h2>
                     </div>
 
@@ -290,8 +287,8 @@ export default function MemberForm({ treeId }: { treeId: string }) {
 
                 {/* --- PROFESSIONAL SECTION --- */}
                 <section className="flex flex-col gap-6">
-                    <div className="flex items-center gap-2 border-b border-white/10 pb-3">
-                        <Briefcase size={18} className="text-indigo-400" />
+                    <div className="flex items-center gap-2 border-b border-white/5 pb-4">
+                        <Briefcase size={18} className="text-white/40" />
                         <h2 className="text-lg font-bold text-white tracking-tight">Professional Background</h2>
                     </div>
 
@@ -305,8 +302,8 @@ export default function MemberForm({ treeId }: { treeId: string }) {
 
                 {/* --- HEALTH INFO SECTION --- */}
                 <section className="flex flex-col gap-6">
-                    <div className="flex items-center gap-2 border-b border-white/10 pb-3">
-                        <HeartPulse size={18} className="text-indigo-400" />
+                    <div className="flex items-center gap-2 border-b border-white/5 pb-4">
+                        <HeartPulse size={18} className="text-white/40" />
                         <h2 className="text-lg font-bold text-white tracking-tight">Core Health Metrics</h2>
                     </div>
 
@@ -321,8 +318,8 @@ export default function MemberForm({ treeId }: { treeId: string }) {
 
                 {/* --- MEDICAL HISTORY (BOOLEANS) --- */}
                 <section className="flex flex-col gap-6">
-                    <div className="flex items-center gap-2 border-b border-white/10 pb-3">
-                        <Stethoscope size={18} className="text-indigo-400" />
+                    <div className="flex items-center gap-2 border-b border-white/5 pb-4">
+                        <Stethoscope size={18} className="text-white/40" />
                         <h2 className="text-lg font-bold text-white tracking-tight">Medical History Flags</h2>
                     </div>
 
@@ -337,8 +334,8 @@ export default function MemberForm({ treeId }: { treeId: string }) {
 
                 {/* --- LIFESTYLE (BOOLEANS) --- */}
                 <section className="flex flex-col gap-6">
-                    <div className="flex items-center gap-2 border-b border-white/10 pb-3">
-                        <Coffee size={18} className="text-indigo-400" />
+                    <div className="flex items-center gap-2 border-b border-white/5 pb-4">
+                        <Coffee size={18} className="text-white/40" />
                         <h2 className="text-lg font-bold text-white tracking-tight">Lifestyle Indicators</h2>
                     </div>
 
@@ -351,8 +348,8 @@ export default function MemberForm({ treeId }: { treeId: string }) {
 
                 {/* --- BIO --- */}
                 <section className="flex flex-col gap-6">
-                    <div className="flex items-center gap-2 border-b border-white/10 pb-3">
-                        <Info size={18} className="text-indigo-400" />
+                    <div className="flex items-center gap-2 border-b border-white/5 pb-4">
+                        <Info size={18} className="text-white/40" />
                         <h2 className="text-lg font-bold text-white tracking-tight">Additional Notes & Biography</h2>
                     </div>
 
@@ -361,23 +358,23 @@ export default function MemberForm({ treeId }: { treeId: string }) {
                             {...register('bio')}
                             rows={4}
                             placeholder="A brief history, interesting life stories, or specific contexts about this relative..."
-                            className="px-4 py-3 bg-[#0F172A] border border-white/10 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-400 outline-none transition-all resize-none placeholder:text-slate-600 shadow-sm"
+                            className="px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl focus:border-white/30 focus:bg-white/[0.05] outline-none transition-all resize-none placeholder:text-white/20 text-white font-medium"
                         />
                     </div>
                 </section>
 
-                <div className="pt-8 border-t border-white/5 flex justify-end sticky bottom-0 bg-[#111827] mtCustom">
-                    <PrimaryButton
+                <div className="pt-8 border-t border-white/5 flex justify-end sticky bottom-0 bg-transparent mt-2">
+                    <button
                         disabled={isSubmitting}
-                        className="px-8 shadow-2xl"
                         onClick={handleSubmit(onSubmit)}
+                        className="px-8 py-3.5 bg-white text-black font-semibold rounded-xl hover:bg-slate-200 transition-colors shadow-xl active:scale-95 flex items-center justify-center gap-2 w-full md:w-auto"
                     >
                         {isSubmitting ? (
-                            <><Loader2 size={18} className="animate-spin" /> Inserting...</>
+                            <><Loader2 size={18} className="animate-spin" /> Saving Data...</>
                         ) : (
-                            <><Save size={18} /> Save Detailed Profile</>
+                            <><Save size={18} /> Finalize Node Entry</>
                         )}
-                    </PrimaryButton>
+                    </button>
                 </div>
             </form>
 

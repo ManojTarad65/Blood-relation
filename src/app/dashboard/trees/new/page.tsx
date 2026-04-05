@@ -80,17 +80,17 @@ export default function NewTreePage() {
 
     return (
         <AppContainer className="min-h-[80vh] flex items-center justify-center">
-            <Card className="w-full max-w-xl flex flex-col gap-8 p-8 md:p-10 border border-white/5">
+            <Card className="w-full max-w-xl flex flex-col gap-8 p-8 md:p-10 border border-white/[0.08] bg-white/[0.02]">
                 <div className="flex flex-col gap-2 items-center text-center">
-                    <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center mb-4 border border-indigo-500/20">
+                    <div className="w-16 h-16 rounded-3xl bg-white/5 text-white/60 flex items-center justify-center mb-4 border border-white/10 shadow-sm">
                         <TreePine size={32} />
                     </div>
-                    <h1 className="text-2xl font-bold tracking-tight text-white">Initialize New Tree</h1>
-                    <p className="text-slate-400 text-sm">Create a secure container to begin charting your generational lineage.</p>
+                    <h1 className="text-2xl font-bold tracking-tight text-white mb-1">Initialize New Tree</h1>
+                    <p className="text-white/40 text-sm font-medium">Create a secure container to begin charting your generational lineage.</p>
                 </div>
 
                 {error && (
-                    <div className="flex items-center gap-3 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm font-medium">
+                    <div className="flex items-center gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm font-medium">
                         <AlertCircle size={18} className="shrink-0" />
                         <p>{error}</p>
                     </div>
@@ -98,44 +98,44 @@ export default function NewTreePage() {
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-6">
                     <div className="flex flex-col gap-2">
-                        <label className="text-sm font-medium text-slate-300">Tree Name *</label>
+                        <label className="text-sm font-semibold text-white/50 tracking-wide uppercase text-[10px] ml-1">Tree Name *</label>
                         <input
                             type="text"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             disabled={isLoading}
                             placeholder="e.g. The Verma Dynasty"
-                            className="w-full px-4 py-3 bg-[#0F172A] border border-white/10 rounded-xl text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-colors shadow-sm disabled:opacity-50"
+                            className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/[0.05] transition-all shadow-sm disabled:opacity-50"
                         />
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        <label className="text-sm font-medium text-slate-300">Description (Optional)</label>
+                        <label className="text-sm font-semibold text-white/50 tracking-wide uppercase text-[10px] ml-1">Description (Optional)</label>
                         <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             disabled={isLoading}
                             rows={3}
                             placeholder="A brief overview of this family lineage..."
-                            className="w-full px-4 py-3 bg-[#0F172A] border border-white/10 rounded-xl text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-colors shadow-sm resize-none disabled:opacity-50"
+                            className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/[0.05] transition-all shadow-sm disabled:opacity-50 resize-none"
                         />
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-3 mt-4">
                         <PrimaryButton
-                            className="w-full py-3 text-base flex-1 justify-center"
+                            className="w-full py-3.5 text-base flex-1 justify-center"
                             disabled={isLoading}
-                            onClick={handleSubmit} // Added onClick handler for button acting as submit
+                            onClick={handleSubmit} 
                         >
                             {isLoading ? (
-                                <><Loader2 size={18} className="animate-spin" /> Creating...</>
+                                <><Loader2 size={18} className="animate-spin" /> Creating Component...</>
                             ) : (
-                                "Create Tree"
+                                "Construct Tree"
                             )}
                         </PrimaryButton>
                         <SubtleButton
                             href="/dashboard/trees"
-                            className="w-full sm:w-auto py-3 text-base justify-center"
+                            className="w-full sm:w-auto py-3.5 text-base justify-center"
                         >
                             Cancel
                         </SubtleButton>

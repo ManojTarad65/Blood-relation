@@ -1,15 +1,7 @@
 'use client';
 
 import { createClient } from '@/lib/supabase/client';
-import {
-  Camera,
-  Mail,
-  ShieldCheck,
-  Zap,
-  Loader2,
-  Lock,
-  Save
-} from 'lucide-react';
+import { Camera, Mail, Loader2, Save } from 'lucide-react';
 import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 
@@ -17,6 +9,9 @@ export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  
+  const [fullName, setFullName] = useState('');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -25,6 +20,7 @@ export default function ProfilePage() {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
+      setFullName(user?.user_metadata?.full_name || '');
       setLoading(false);
     }
     load();
@@ -35,6 +31,7 @@ export default function ProfilePage() {
     if (!file) return;
 
     setIsUploading(true);
+    // Simulate upload delay
     await new Promise(r => setTimeout(r, 1500));
 
     const newUrl = URL.createObjectURL(file);
@@ -49,170 +46,125 @@ export default function ProfilePage() {
     setIsUploading(false);
   };
 
-  if (loading) return null;
+  const handleUpdateProfile = async () => {
+      setIsSaving(true);
+      // Simulate save
+      await new Promise(r => setTimeout(r, 800));
+      setIsSaving(false);
+  };
+
+  if (loading) return (
+      <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="w-6 h-6 animate-spin text-white/50" />
+      </div>
+  );
 
   return (
-    <div className="relative min-h-screen bg-[#0B0F19] text-white px-6 md:px-12 py-24 overflow-hidden">
+    <div className="min-h-screen pb-12 p-6 md:p-8 flex justify-center w-full">
 
-      {/* Background Glow */}
-      <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-indigo-600/20 rounded-full blur-[140px]" />
-      <div className="absolute top-40 right-0 w-[400px] h-[400px] bg-purple-600/20 rounded-full blur-[120px]" />
+      <div className="w-full max-w-3xl flex flex-col gap-10">
 
-      <div className="relative z-10 max-w-7xl mx-auto flex flex-col gap-16">
-
-        {/* Header */}
-        <div>
-          <h1 className="text-4xl font-bold tracking-tight mb-3">
-            Account Profile
-          </h1>
-          <p className="text-slate-400">
-            Manage your identity, security and subscription.
-          </p>
+        {/* HEADER */}
+        <div className="flex flex-col gap-2 pb-6 border-b border-white/5">
+            <h1 className="text-3xl font-bold tracking-tight text-white">Profile</h1>
+            <p className="text-sm text-white/50">Manage your account details</p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-10">
-
-          {/* LEFT COLUMN */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
             className="flex flex-col gap-8"
-          >
+        >
 
-            {/* Identity Card */}
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 flex flex-col items-center text-center shadow-2xl">
+          {/* PROFILE CARD */}
+          <div className="bg-white/[0.04] border border-white/[0.08] rounded-3xl p-8 flex flex-col md:flex-row items-center md:items-start gap-8 shadow-sm">
+            <div
+              className="relative group cursor-pointer shrink-0"
+              onClick={() => !isUploading && fileInputRef.current?.click()}
+            >
+              <div className="relative w-28 h-28 rounded-full border border-white/10 overflow-hidden flex items-center justify-center bg-white/5 transition-all duration-200 group-hover:brightness-110">
+                {isUploading ? (
+                  <Loader2 className="w-6 h-6 animate-spin text-white/60" />
+                ) : user?.user_metadata?.avatar_url ? (
+                  <img
+                    src={user.user_metadata.avatar_url}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-4xl font-bold text-white/60">
+                    {fullName ? fullName.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase()}
+                  </span>
+                )}
 
-              <div
-                className="relative group cursor-pointer mb-6"
-                onClick={() => !isUploading && fileInputRef.current?.click()}
-              >
-                <div className="absolute inset-0 bg-indigo-500 rounded-full blur-2xl opacity-40 group-hover:opacity-80 transition" />
-                <div className="relative w-32 h-32 rounded-full border border-white/20 overflow-hidden flex items-center justify-center bg-indigo-900">
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center backdrop-blur-sm">
+                  <Camera className="w-6 h-6 text-white" />
+                </div>
+              </div>
 
-                  {isUploading ? (
-                    <Loader2 className="w-8 h-8 animate-spin text-indigo-400" />
-                  ) : user?.user_metadata?.avatar_url ? (
-                    <img
-                      src={user.user_metadata.avatar_url}
-                      className="w-full h-full object-cover"
+              <input
+                type="file"
+                className="hidden"
+                ref={fileInputRef}
+                onChange={handleAvatarUpload}
+                accept="image/*"
+              />
+            </div>
+
+            <div className="flex flex-col items-center md:items-start text-center md:text-left gap-2 w-full mt-2">
+                <h2 className="text-2xl font-bold text-white tracking-tight">
+                    {fullName || 'Anonymous User'}
+                </h2>
+                <div className="flex items-center gap-2 text-white/50 text-sm font-medium">
+                    <Mail size={14} /> {user?.email}
+                </div>
+                <div className="px-3 py-1.5 bg-white/[0.04] text-white/60 text-[10px] uppercase tracking-widest font-bold rounded-lg border border-white/10 mt-3 inline-flex w-fit">
+                    Standard Plan
+                </div>
+            </div>
+          </div>
+
+          {/* EDIT SECTION */}
+          <div className="bg-white/[0.02] border border-white/[0.08] rounded-3xl p-8 shadow-sm flex flex-col gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <div className="flex flex-col gap-2.5">
+                    <label className="text-[10px] tracking-widest font-bold text-white/50 uppercase ml-1">
+                        Full Name
+                    </label>
+                    <input
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        placeholder="John Doe"
+                        className="w-full bg-transparent border border-white/10 rounded-xl px-4 py-3.5 text-white text-sm font-medium focus:outline-none focus:border-white/30 focus:shadow-[0_0_15px_rgba(255,255,255,0.05)] transition-all duration-200 placeholder:text-white/20"
                     />
-                  ) : (
-                    <span className="text-4xl font-bold text-indigo-300">
-                      {user?.email?.charAt(0).toUpperCase()}
-                    </span>
-                  )}
-
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                    <Camera className="w-6 h-6 text-white" />
-                  </div>
                 </div>
 
-                <input
-                  type="file"
-                  className="hidden"
-                  ref={fileInputRef}
-                  onChange={handleAvatarUpload}
-                />
-              </div>
-
-              <h2 className="text-2xl font-semibold mb-1">
-                {user?.user_metadata?.full_name || 'Anonymous User'}
-              </h2>
-
-              <div className="flex items-center gap-2 text-slate-400 text-sm mb-6">
-                <Mail size={14} /> {user?.email}
-              </div>
-
-              <div className="px-4 py-2 bg-emerald-500/10 text-emerald-400 text-xs font-semibold rounded-full border border-emerald-500/20 flex items-center gap-2">
-                <ShieldCheck size={14} /> Verified Account
-              </div>
+                <div className="flex flex-col gap-2.5">
+                    <label className="text-[10px] tracking-widest font-bold text-white/50 uppercase ml-1">
+                        Email Address
+                    </label>
+                    <input
+                        readOnly
+                        value={user?.email || ''}
+                        className="w-full bg-white/[0.02] border border-white/5 rounded-xl px-4 py-3.5 text-white/40 text-sm font-medium cursor-not-allowed outline-none"
+                    />
+                </div>
             </div>
 
-            {/* Plan Card */}
-            <div className="bg-gradient-to-br from-indigo-600/20 to-purple-600/20 backdrop-blur-xl border border-indigo-500/30 rounded-3xl p-8 shadow-2xl">
-              <div className="flex items-center gap-3 mb-4">
-                <Zap className="text-indigo-400" />
-                <span className="text-lg font-semibold">Free Plan</span>
-              </div>
-
-              <p className="text-slate-300 text-sm mb-6">
-                Upgrade to Premium AI to unlock predictive health intelligence and unlimited family mapping.
-              </p>
-
-              <button className="w-full py-3 bg-white text-black font-semibold rounded-xl hover:bg-slate-200 transition">
-                Upgrade Plan
-              </button>
-            </div>
-
-          </motion.div>
-
-          {/* RIGHT COLUMN */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="lg:col-span-2 bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-10 shadow-2xl flex flex-col gap-12"
-          >
-
-            {/* General Info */}
-            <div>
-              <h3 className="text-xl font-semibold mb-6">
-                General Information
-              </h3>
-
-              <div className="grid md:grid-cols-2 gap-6">
-
-                <div className="flex flex-col gap-2">
-                  <label className="text-xs text-slate-400 uppercase tracking-widest">
-                    Full Name
-                  </label>
-                  <input
-                    defaultValue={user?.user_metadata?.full_name}
-                    className="px-4 py-3 bg-[#0F172A] border border-white/10 rounded-xl focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <label className="text-xs text-slate-400 uppercase tracking-widest">
-                    Email
-                  </label>
-                  <input
-                    disabled
-                    defaultValue={user?.email}
-                    className="px-4 py-3 bg-[#0F172A] border border-white/5 rounded-xl text-slate-500 cursor-not-allowed"
-                  />
-                </div>
-
-              </div>
-
-              <div className="mt-8 flex justify-end">
-                <button className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-semibold transition">
-                  <Save size={16} /> Save Changes
+            <div className="pt-6 border-t border-white/5 flex gap-4 w-full sm:w-auto mt-2">
+                <button 
+                  onClick={handleUpdateProfile}
+                  disabled={isSaving}
+                  className="w-full sm:w-auto px-8 py-3.5 bg-white text-black font-semibold rounded-xl hover:brightness-90 transition-all flex items-center justify-center gap-2 active:scale-95 text-sm disabled:opacity-50"
+                >
+                    {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                    Update Profile
                 </button>
-              </div>
             </div>
+          </div>
 
-            {/* Security */}
-            <div className="border-t border-white/10 pt-10">
-              <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
-                <Lock size={18} /> Security
-              </h3>
-
-              <div className="flex gap-4">
-                <input
-                  type="password"
-                  placeholder="New password"
-                  className="flex-1 px-4 py-3 bg-[#0F172A] border border-white/10 rounded-xl focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
-                />
-                <button className="px-6 py-3 bg-white text-black font-semibold rounded-xl hover:bg-slate-200 transition">
-                  Update
-                </button>
-              </div>
-            </div>
-
-          </motion.div>
-
-        </div>
+        </motion.div>
       </div>
     </div>
   );

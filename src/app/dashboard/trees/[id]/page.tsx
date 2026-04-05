@@ -8,7 +8,6 @@ import { useEffect, useState, useCallback } from 'react'
 import TreeCanvas from '@/components/trees/TreeCanvas'
 import { motion } from 'framer-motion'
 import { ReactFlowProvider } from 'reactflow'
-import { PrimaryButton } from '@/components/ui/LayoutBlocks'
 import { isDevMode, DEMO_TREES, DEMO_MEMBERS } from '@/lib/mockData'
 
 export default function TreeViewerPage({ params }: { params: { id: string } }) {
@@ -84,72 +83,72 @@ export default function TreeViewerPage({ params }: { params: { id: string } }) {
 
     // State 1: Loading
     if (loading) return (
-        <div className="flex flex-col gap-4 h-screen w-full items-center justify-center bg-[#0B0F1A]">
-            <div className="w-10 h-10 rounded-full border-t-2 border-r-2 border-indigo-500 animate-spin" />
-            <p className="text-sm font-medium text-slate-400">Loading Legacy Cluster...</p>
+        <div className="flex flex-col gap-4 h-[calc(100vh-4rem)] w-full items-center justify-center bg-transparent">
+            <div className="w-10 h-10 rounded-full border-t-2 border-r-2 border-white/50 animate-spin" />
+            <p className="text-sm font-medium text-white/40 tracking-widest uppercase">Initializing Canvas</p>
         </div>
     );
 
     // State 2: Error UI (Tree Not Found / Unauth)
     if (error || !tree) return (
-        <div className="flex h-screen w-full items-center justify-center bg-[#0F172A] font-outfit p-4">
-            <div className="flex flex-col items-center justify-center text-center p-10 max-w-lg w-full bg-[#111827] border border-white/10 rounded-2xl shadow-xl">
-                <div className="w-16 h-16 rounded-2xl bg-rose-500/10 text-rose-400 flex items-center justify-center mb-6">
+        <div className="flex h-[calc(100vh-4rem)] w-full items-center justify-center  p-4 relative">
+            <div className="flex flex-col items-center justify-center text-center p-10 max-w-lg w-full bg-white/[0.02] border border-white/[0.08] rounded-3xl shadow-xl backdrop-blur-xl relative z-10">
+                <div className="w-16 h-16 rounded-2xl bg-red-500/10 text-red-500 flex items-center justify-center mb-6">
                     <AlertCircle size={32} />
                 </div>
                 <h1 className="text-2xl font-bold text-white mb-3 tracking-tight">Access Denied</h1>
-                <p className="text-slate-400 mb-8 max-w-xs">{error || "This tree does not exist or you don't have permission to view it."}</p>
-                <PrimaryButton href="/dashboard/trees">
-                    Return to My Forests
-                </PrimaryButton>
+                <p className="text-white/50 mb-8 max-w-xs">{error || "This tree does not exist or you don't have permission to view it."}</p>
+                <Link href="/dashboard/trees" className="px-6 py-3 bg-white text-black font-semibold rounded-xl hover:bg-slate-200 transition-colors w-full active:scale-95 text-sm">
+                    Return to Forests
+                </Link>
             </div>
         </div>
     );
 
     // State 3: Success
     return (
-        <div className="flex flex-col h-screen w-full font-outfit relative overflow-hidden bg-[#0B0F1A] text-slate-50">
+        <div className="flex flex-col h-[calc(100vh-4rem)] w-full font-outfit relative overflow-hidden bg-transparent text-white">
 
             {/* Modern Top Toolbar - Floating */}
             <motion.header
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="absolute top-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] md:w-[calc(100%-3rem)] max-w-5xl h-16 flex items-center justify-between px-4 sm:px-5 bg-[#111827]/80 backdrop-blur-xl border border-white/10 rounded-xl z-40 shadow-xl"
+                className="absolute top-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] md:w-[calc(100%-3rem)] max-w-5xl h-16 flex items-center justify-between px-4 sm:px-6 bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] rounded-2xl z-40 shadow-xl"
             >
                 <div className="flex items-center gap-3 sm:gap-4">
-                    <Link href="/dashboard/trees" className="p-2 -ml-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+                    <Link href="/dashboard/trees" className="p-2 -ml-2 text-white/50 hover:text-white hover:bg-white/10 rounded-xl transition-colors">
                         <ArrowLeft size={18} />
                     </Link>
                     <div className="h-6 w-px bg-white/10 hidden sm:block mx-1" />
-                    <div className="hidden sm:flex p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
-                        <TreePine size={18} className="text-indigo-400" />
+                    <div className="hidden sm:flex p-2 rounded-xl bg-white/10 border border-white/10 text-white">
+                        <TreePine size={18} />
                     </div>
                     <div className="flex flex-col justify-center">
-                        <h1 className="font-semibold text-white text-sm sm:text-base leading-tight tracking-tight">{tree.name}</h1>
-                        <span className="text-[10px] text-slate-400 font-mono tracking-widest uppercase mt-0.5">
-                            {members.length} Nodes
+                        <h1 className="font-bold text-white text-sm sm:text-base leading-tight tracking-tight">{tree.name}</h1>
+                        <span className="text-[10px] text-white/40 font-bold tracking-widest uppercase mt-0.5">
+                            {members.length} Nodes Rendered
                         </span>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-1 sm:gap-2 text-sm">
                     {/* Action Buttons */}
-                    <button className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/5 text-slate-300 transition-colors font-medium">
+                    <button className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-white/10 text-white/60 hover:text-white transition-colors font-medium">
                         <Download size={14} /> Export
                     </button>
-                    <button className="flex items-center gap-2 md:px-4 px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-500 transition-colors shadow-sm ml-1">
+                    <button className="flex items-center gap-2 md:px-5 px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl text-black bg-white hover:bg-slate-200 transition-colors shadow-sm ml-1 active:scale-95">
                         <Share2 size={14} /> Share
                     </button>
                     <div className="h-6 w-px bg-white/10 mx-1 sm:mx-2" />
-                    <button className="p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+                    <button className="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-colors">
                         <Settings size={18} />
                     </button>
                 </div>
             </motion.header>
 
             {/* Infinite Canvas Workspace */}
-            <div className="flex-1 relative w-full h-full bg-[#0F172A]">
-                <div className="absolute inset-0 z-10 w-full h-full">
+            <div className="flex-1 relative w-full h-full">
+                <div className="absolute inset-0 z-10 w-full h-full rounded-2xl overflow-hidden mt-2 border-t border-white/5">
                     <ReactFlowProvider>
                         <TreeCanvas treeId={tree.id} members={members} onRefresh={loadData} />
                     </ReactFlowProvider>

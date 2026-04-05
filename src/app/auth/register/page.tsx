@@ -4,71 +4,97 @@ import { Network } from 'lucide-react'
 
 export default function RegisterPage({ searchParams }: { searchParams: { error?: string, message?: string } }) {
     return (
-        <div className="glass-card p-10 flex flex-col w-full text-slate-50 relative overflow-hidden">
-            {/* Decorative pulse */}
-            <div className="absolute top-0 right-0 w-full h-1 bg-gradient-brand opacity-80" />
-
-            <div className="flex flex-col items-center mb-8">
-                <Network className="w-12 h-12 text-purple-400 mb-4" />
-                <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-brand">Join RootConnect</h1>
-                <p className="text-slate-400 text-sm mt-2">Start documenting your family legacy</p>
-            </div>
-
-            <form className="animate-in flex flex-col w-full justify-center gap-4 text-slate-200">
-                <div className="flex flex-col gap-2">
-                    <label className="text-sm text-slate-400" htmlFor="full_name">Full Name</label>
-                    <input
-                        className="rounded-xl px-4 py-3 bg-slate-900/50 border border-slate-700/50 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 outline-none transition-all placeholder:text-slate-600"
-                        name="full_name"
-                        placeholder="John Doe"
-                        required
-                    />
-                </div>
-                <div className="flex flex-col gap-2 mt-2">
-                    <label className="text-sm text-slate-400" htmlFor="email">Email</label>
-                    <input
-                        className="rounded-xl px-4 py-3 bg-slate-900/50 border border-slate-700/50 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 outline-none transition-all placeholder:text-slate-600"
-                        name="email"
-                        placeholder="you@example.com"
-                        required
-                    />
-                </div>
-                <div className="flex flex-col gap-2 mt-2">
-                    <label className="text-sm text-slate-400" htmlFor="password">Password</label>
-                    <input
-                        className="rounded-xl px-4 py-3 bg-slate-900/50 border border-slate-700/50 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 outline-none transition-all placeholder:text-slate-600"
-                        type="password"
-                        name="password"
-                        placeholder="••••••••"
-                        required
-                    />
+        <div 
+            className="min-h-screen flex flex-col justify-center items-center p-4 md:p-8"
+            style={{
+                background: 'radial-gradient(circle at 20% 20%, rgba(255,255,255,0.05), transparent 40%), linear-gradient(180deg, #0B0F1A, #0D1323)'
+            }}
+        >
+            <div className="w-full max-w-md flex flex-col items-center">
+                {/* Logo */}
+                <div className="mb-6 flex justify-center">
+                    <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center border border-white/10 shadow-sm">
+                        <Network className="w-6 h-6 text-white" />
+                    </div>
                 </div>
 
-                {searchParams?.error && (
-                    <p className="mt-2 p-3 bg-red-900/20 text-red-400 text-sm text-center border border-red-900/50 rounded-xl">
-                        {searchParams.error}
-                    </p>
-                )}
+                {/* Heading */}
+                <h1 className="text-2xl md:text-3xl font-semibold text-white mb-2 text-center tracking-tight">
+                    Create your account
+                </h1>
+                <p className="text-slate-400 text-sm md:text-base text-center mb-8">
+                    Start building your family intelligence system
+                </p>
 
-                {searchParams?.message && (
-                    <p className="mt-2 p-3 bg-emerald-900/20 text-emerald-400 text-sm text-center border border-emerald-900/50 rounded-xl">
-                        {searchParams.message}
-                    </p>
-                )}
-
-                <button
-                    formAction={signup}
-                    className="mt-6 font-semibold bg-purple-600 hover:bg-purple-500 text-white rounded-full px-4 py-3 transition-colors shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:shadow-[0_0_30px_rgba(168,85,247,0.5)]"
+                {/* Auth Card */}
+                <div 
+                    className="w-full rounded-2xl p-7 md:p-8 shadow-2xl"
+                    style={{
+                        background: 'rgba(255,255,255,0.04)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                    }}
                 >
-                    Sign Up Free
-                </button>
-            </form>
+                    <form className="flex flex-col gap-4 w-full">
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-sm text-slate-300 font-medium" htmlFor="full_name">Full Name</label>
+                            <input
+                                className="w-full rounded-lg px-4 py-3 bg-transparent border border-white/10 text-white placeholder:text-white/40 focus:border-white/30 focus:shadow-[0_0_15px_rgba(255,255,255,0.05)] focus:ring-1 focus:ring-white/30 outline-none transition-all duration-200"
+                                name="full_name"
+                                placeholder="John Doe"
+                                required
+                            />
+                        </div>
 
-            <div className="mt-8 text-center text-sm text-slate-400">
-                Already have an account?{' '}
-                <Link href="/auth/login" className="text-purple-400 hover:text-purple-300 transition-colors font-medium">
-                    Sign in
-                </Link>
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-sm text-slate-300 font-medium" htmlFor="email">Email</label>
+                            <input
+                                className="w-full rounded-lg px-4 py-3 bg-transparent border border-white/10 text-white placeholder:text-white/40 focus:border-white/30 focus:shadow-[0_0_15px_rgba(255,255,255,0.05)] focus:ring-1 focus:ring-white/30 outline-none transition-all duration-200"
+                                name="email"
+                                type="email"
+                                placeholder="you@example.com"
+                                required
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-sm text-slate-300 font-medium" htmlFor="password">Password</label>
+                            <input
+                                className="w-full rounded-lg px-4 py-3 bg-transparent border border-white/10 text-white placeholder:text-white/40 focus:border-white/30 focus:shadow-[0_0_15px_rgba(255,255,255,0.05)] focus:ring-1 focus:ring-white/30 outline-none transition-all duration-200"
+                                type="password"
+                                name="password"
+                                placeholder="••••••••"
+                                required
+                            />
+                        </div>
+
+                        {searchParams?.error && (
+                            <p className="mt-2 p-3 bg-red-500/10 text-red-400 text-sm text-center border border-red-500/20 rounded-lg">
+                                {searchParams.error}
+                            </p>
+                        )}
+
+                        {searchParams?.message && (
+                            <p className="mt-2 p-3 bg-emerald-500/10 text-emerald-400 text-sm text-center border border-emerald-500/20 rounded-lg">
+                                {searchParams.message}
+                            </p>
+                        )}
+
+                        <button
+                            formAction={signup}
+                            className="mt-4 w-full font-medium bg-white text-black rounded-lg px-4 py-3 transition-all duration-200 hover:scale-[1.02] hover:brightness-110 active:scale-[0.98]"
+                        >
+                            Sign up
+                        </button>
+                    </form>
+                </div>
+
+                {/* Footer Text */}
+                <div className="mt-8 text-center text-sm text-slate-400">
+                    Already have an account?{' '}
+                    <Link href="/auth/login" className="text-white hover:text-white/80 transition-colors font-medium">
+                        Sign in
+                    </Link>
+                </div>
             </div>
         </div>
     )

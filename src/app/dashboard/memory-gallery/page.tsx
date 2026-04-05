@@ -175,22 +175,22 @@ export default function MemoryGalleryPage() {
   if (loading) return null;
 
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-white px-8 py-20">
+    <div className="min-h-screen pb-12 p-6 md:p-8">
 
-      <div className="max-w-7xl mx-auto flex flex-col gap-12">
+      <div className="max-w-7xl mx-auto flex flex-col gap-8">
 
-        {/* HEADER */}
-        <div className="flex justify-between items-center">
+        {/* HEADER UNIFIED */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-2 pb-6 border-b border-white/5 gap-6">
           <div>
-            <h1 className="text-4xl font-bold">Memory Vault</h1>
-            <p className="text-slate-400">Manage your family memories.</p>
+            <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Memory Vault</h1>
+            <p className="text-sm text-white/50">Organize and manage your ancestral image archives.</p>
           </div>
 
           <button
             onClick={() => setIsUploadOpen(true)}
-            className="bg-indigo-600 px-6 py-3 rounded-xl hover:bg-indigo-500 transition"
+            className="bg-white hover:bg-white/90 text-black px-6 py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 font-semibold active:scale-95 whitespace-nowrap text-sm shrink-0"
           >
-            <ImagePlus size={16} className="inline mr-2" />
+            <ImagePlus size={16} />
             Add Memory
           </button>
         </div>
@@ -198,83 +198,97 @@ export default function MemoryGalleryPage() {
         {/* FILTERS */}
         <div className="flex flex-wrap gap-4">
 
-          <div className="relative">
-            <Search size={14} className="absolute left-3 top-3 text-slate-400" />
+          <div className="relative flex-1 md:w-64 md:flex-none">
+            <Search size={14} className="absolute left-3 top-3.5 text-white/30" />
             <input
               placeholder="Search caption..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="pl-10 bg-[#111827] border border-white/10 px-4 py-2 rounded-lg"
+              className="w-full pl-9 bg-white/[0.04] border border-white/[0.08] px-4 py-2.5 rounded-xl text-sm text-white focus:outline-none focus:border-white/20 focus:bg-white/[0.06] transition-all font-medium"
             />
           </div>
 
           <input
-            placeholder="Filter by year"
+            placeholder="Filter by year (e.g. 1995)"
             value={yearFilter}
             onChange={e => setYearFilter(e.target.value)}
-            className="bg-[#111827] border border-white/10 px-4 py-2 rounded-lg"
+            className="bg-white/[0.04] border border-white/[0.08] px-4 py-2.5 rounded-xl text-sm text-white focus:outline-none focus:border-white/20 focus:bg-white/[0.06] transition-all w-full md:w-auto font-medium"
           />
 
           <input
             placeholder="Filter by tag"
             value={tagFilter}
             onChange={e => setTagFilter(e.target.value)}
-            className="bg-[#111827] border border-white/10 px-4 py-2 rounded-lg"
+            className="bg-white/[0.04] border border-white/[0.08] px-4 py-2.5 rounded-xl text-sm text-white focus:outline-none focus:border-white/20 focus:bg-white/[0.06] transition-all w-full md:w-auto font-medium"
           />
 
         </div>
 
         {/* GRID */}
-        <div className="grid md:grid-cols-3 gap-8">
-          {filteredMemories.map(mem => (
-            <motion.div
-              key={mem.id}
-              whileHover={{ y: -5 }}
-              className="bg-[#111827] border border-white/10 rounded-2xl overflow-hidden shadow-xl"
-            >
-              <img src={mem.image_url} className="w-full h-60 object-cover" />
-
-              <div className="p-4 flex flex-col gap-2">
-                <h3 className="font-semibold">{mem.caption}</h3>
-
-                <div className="text-xs text-indigo-300 flex items-center gap-2">
-                  <Calendar size={12} /> {mem.year}
+        {filteredMemories.length === 0 ? (
+            <div className="text-center py-24 border border-dashed border-white/10 rounded-3xl bg-white/[0.02]">
+                <Camera className="w-12 h-12 text-white/20 mx-auto mb-4" />
+                <h3 className="text-white/80 font-semibold mb-1 text-lg">No Memories Found</h3>
+                <p className="text-white/40 text-sm">Upload visual records to begin populating your vault.</p>
+            </div>
+        ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredMemories.map(mem => (
+                <motion.div
+                key={mem.id}
+                whileHover={{ y: -6 }}
+                className="bg-white/[0.03] border border-white/[0.08] rounded-2xl overflow-hidden shadow-lg group hover:border-white/20 transition-all duration-300 flex flex-col"
+                >
+                <div className="relative w-full h-48 bg-white/5 border-b border-white/[0.08]">
+                    <img src={mem.image_url} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
+                    <div className="absolute bottom-3 left-4 text-xs font-semibold text-white flex items-center gap-1.5 drop-shadow-md bg-black/40 px-2.5 py-1 rounded-md backdrop-blur-md">
+                    <Calendar size={12} /> {mem.year || 'Unknown Year'}
+                    </div>
                 </div>
 
-                <div className="flex justify-between mt-3">
-                  <button
-                    onClick={() => openEdit(mem)}
-                    className="text-indigo-400 text-sm flex items-center gap-1"
-                  >
-                    <Edit3 size={14} /> Edit
-                  </button>
+                <div className="p-5 flex flex-col flex-1 gap-4">
+                    <h3 className="font-bold text-white text-base leading-snug line-clamp-2 flex-1">{mem.caption}</h3>
 
-                  <button
-                    onClick={() => handleDelete(mem)}
-                    className="text-rose-400 text-sm flex items-center gap-1"
-                  >
-                    <Trash2 size={14} /> Delete
-                  </button>
+                    <div className="flex justify-between items-center pt-2 border-t border-white/5">
+                    <button
+                        onClick={() => openEdit(mem)}
+                        className="text-white/40 hover:text-white text-sm flex items-center gap-1.5 transition-colors font-medium"
+                    >
+                        <Edit3 size={14} /> Edit
+                    </button>
+
+                    <button
+                        onClick={() => handleDelete(mem)}
+                        className="text-white/40 hover:text-red-400 text-sm flex items-center gap-1.5 transition-colors font-medium"
+                    >
+                        <Trash2 size={14} /> Delete
+                    </button>
+                    </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                </motion.div>
+            ))}
+            </div>
+        )}
 
       </div>
 
       {/* CREATE MODAL */}
       <AnimatePresence>
         {isUploadOpen && (
-          <Modal title="Add Memory" onClose={() => setIsUploadOpen(false)}>
+          <Modal title="Upload Vault Item" onClose={() => setIsUploadOpen(false)}>
             <form onSubmit={handleUpload} className="flex flex-col gap-4">
-              <input type="file" onChange={e => setFile(e.target.files?.[0] || null)} />
-              <input placeholder="Caption" value={caption} onChange={e => setCaption(e.target.value)} />
-              <input placeholder="Year" value={year} onChange={e => setYear(e.target.value)} />
-              <input placeholder="Tags" value={tags} onChange={e => setTags(e.target.value)} />
+              <div className="w-full relative">
+                 <input type="file" onChange={e => setFile(e.target.files?.[0] || null)} className="w-full text-sm text-white/50 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-white/[0.08] file:text-white hover:file:bg-white/10" />
+              </div>
+              <input placeholder="Caption" value={caption} onChange={e => setCaption(e.target.value)} className="bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-white/30 transition-all font-medium" />
+              <div className="flex gap-4">
+                 <input placeholder="Year" value={year} onChange={e => setYear(e.target.value)} className="w-1/2 bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-white/30 transition-all font-medium" />
+                 <input placeholder="Tags (comma separated)" value={tags} onChange={e => setTags(e.target.value)} className="w-1/2 bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-white/30 transition-all font-medium" />
+              </div>
 
-              <button className="bg-indigo-600 py-2 rounded-lg">
-                {isUploading ? <Loader2 className="animate-spin mx-auto" /> : 'Save'}
+              <button className="bg-white text-black font-semibold py-3.5 rounded-xl mt-2 flex items-center justify-center hover:bg-slate-200 transition-colors active:scale-95 text-sm">
+                {isUploading ? <Loader2 className="animate-spin" size={20} /> : 'Save Memory'}
               </button>
             </form>
           </Modal>
@@ -284,17 +298,19 @@ export default function MemoryGalleryPage() {
       {/* EDIT MODAL */}
       <AnimatePresence>
         {isEditOpen && (
-          <Modal title="Edit Memory" onClose={() => setIsEditOpen(false)}>
+          <Modal title="Edit Record" onClose={() => setIsEditOpen(false)}>
             <div className="flex flex-col gap-4">
-              <input value={caption} onChange={e => setCaption(e.target.value)} />
-              <input value={year} onChange={e => setYear(e.target.value)} />
-              <input value={tags} onChange={e => setTags(e.target.value)} />
+              <input value={caption} onChange={e => setCaption(e.target.value)} placeholder="Caption" className="bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-white/30 transition-all font-medium" />
+              <div className="flex gap-4">
+                 <input value={year} onChange={e => setYear(e.target.value)} placeholder="Year" className="w-1/2 bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-white/30 transition-all font-medium" />
+                 <input value={tags} onChange={e => setTags(e.target.value)} placeholder="Tags" className="w-1/2 bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-white/30 transition-all font-medium" />
+              </div>
 
               <button
                 onClick={handleUpdate}
-                className="bg-indigo-600 py-2 rounded-lg"
+                className="bg-white text-black font-semibold py-3.5 rounded-xl mt-2 flex items-center justify-center hover:bg-slate-200 transition-colors active:scale-95 text-sm"
               >
-                Update
+                Update Item
               </button>
             </div>
           </Modal>
@@ -305,25 +321,25 @@ export default function MemoryGalleryPage() {
   );
 }
 
-// Reusable Modal
+// Reusable Modal Unified
 function Modal({ title, children, onClose }: any) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
     >
       <motion.div
-        initial={{ scale: 0.95 }}
-        animate={{ scale: 1 }}
-        exit={{ scale: 0.95 }}
-        className="bg-[#111827] p-8 rounded-2xl w-full max-w-md border border-white/10"
+        initial={{ scale: 0.95, y: 20 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.95, y: 20 }}
+        className="bg-[#0B0F1A] p-8 rounded-3xl w-full max-w-md border border-white/10 shadow-2xl relative"
       >
-        <div className="flex justify-between mb-6">
-          <h2 className="text-lg font-semibold">{title}</h2>
-          <button onClick={onClose}>
-            <X size={18} />
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-bold tracking-tight text-white">{title}</h2>
+          <button onClick={onClose} className="text-white/40 hover:text-white transition-colors bg-white/5 w-8 h-8 rounded-full flex items-center justify-center">
+            <X size={16} />
           </button>
         </div>
 

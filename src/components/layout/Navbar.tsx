@@ -21,44 +21,43 @@ export default async function Navbar({ className = "sticky top-0" }: { className
             </Link>
 
             <div className="hidden md:flex items-center gap-8 text-sm font-medium">
-                <Link href="/about" className="text-slate-400 hover:text-white transition-colors">About</Link>
-                <Link href="/contact" className="text-slate-400 hover:text-white transition-colors">Contact</Link>
-                <Link href="/pricing" className="text-slate-400 hover:text-white transition-colors">Pricing</Link>
+                <Link href="/about" className="text-white/50 hover:text-white transition-colors">About</Link>
+                <Link href="/contact" className="text-white/50 hover:text-white transition-colors">Contact</Link>
+                <Link href="/pricing" className="text-white/50 hover:text-white transition-colors">Pricing</Link>
             </div>
 
             <div className="flex gap-4 items-center">
                 {user ? (
                     <>
-                        <div className="hidden md:flex items-center gap-2 mr-4 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
-                            <UserCircle className="w-4 h-4 text-indigo-400" />
-                            <span className="text-sm font-medium text-slate-300">
+                        <div className="hidden md:flex items-center gap-2 mr-2 bg-white/[0.04] px-4 py-2 rounded-xl border border-white/10 shrink-0">
+                            <UserCircle className="w-4 h-4 text-white/50" />
+                            <span className="text-sm font-medium text-white/80">
                                 Hello, {user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0] || 'User'}
                             </span>
                         </div>
 
-                        <Link href="/dashboard" className="flex items-center gap-2 text-sm font-medium text-slate-300 hover:text-white transition-colors">
+                        <Link href="/dashboard" className="flex items-center gap-2 text-sm font-semibold bg-white text-black px-4 py-2 rounded-xl hover:bg-slate-200 transition-colors shrink-0">
                             <LayoutDashboard className="w-4 h-4" />
                             <span className="hidden sm:inline">Dashboard</span>
                         </Link>
 
                         <form action={logout}>
-                            <button className="flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-red-400 transition-colors ml-2">
-                                <LogOut className="w-4 h-4" />
-                                <span className="hidden sm:inline">Logout</span>
+                            <button className="flex items-center justify-center w-9 h-9 rounded-xl border border-white/10 bg-white/[0.02] text-white/50 hover:text-red-400 hover:border-red-500/30 hover:bg-red-500/10 transition-all ml-1 shrink-0 group">
+                                <LogOut className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
                             </button>
                         </form>
                     </>
                 ) : (
                     <>
-                        <Link href="/auth/login" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">
+                        <Link href="/auth/login" className="text-sm font-medium text-white/60 hover:text-white transition-colors">
                             Sign In
                         </Link>
                         <Link
                             href="/auth/register"
-                            className="group relative px-5 py-2 text-sm font-medium bg-white text-black rounded-full hover:scale-105 transition-transform duration-300 shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+                            className="group relative px-5 py-2 text-sm font-semibold bg-white text-black rounded-xl hover:scale-105 transition-transform duration-300 shadow-[0_0_20px_rgba(255,255,255,0.2)]"
                         >
                             Get Started
-                            <div className="absolute inset-0 rounded-full border border-white/40 scale-105 opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300" />
+                            <div className="absolute inset-0 rounded-xl border border-white/40 scale-105 opacity-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300" />
                         </Link>
                     </>
                 )}

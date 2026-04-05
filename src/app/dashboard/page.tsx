@@ -81,7 +81,7 @@ export default function DashboardPage() {
 
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <Link
-              href="/trees"
+              href="/dashboard/trees"
               className="flex items-center gap-2 bg-white/[0.1] border border-white/20 text-white px-8 py-3.5 rounded-xl font-semibold hover:scale-[1.03] hover:shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:bg-white/[0.15] transition-all duration-300 shadow-lg"
             >
               <Plus size={18} />
@@ -203,7 +203,7 @@ export default function DashboardPage() {
             
             {/* Empty state shortcut if no trees */}
             {trees.length === 0 && (
-               <Link href="/trees">
+               <Link href="/dashboard/trees">
                  <div className="h-full min-h-[140px] border border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center text-white/40 hover:text-white/70 hover:border-white/20 transition-all hover:bg-white/[0.02]">
                     <Plus size={24} className="mb-2" />
                     <span className="text-sm font-medium">Create First Tree</span>

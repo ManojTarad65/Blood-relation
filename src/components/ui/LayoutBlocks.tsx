@@ -12,13 +12,13 @@ export function AppContainer({ children, className = '' }: { children: React.Rea
     );
 }
 
-// Minimal Page Header (replaces the glowing PageHeader)
+// Minimal Page Header
 export function SectionHeader({ title, description, badge, action }: { title: string | React.ReactNode, description?: string, badge?: React.ReactNode, action?: React.ReactNode }) {
     return (
         <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-10 w-full">
             <div className="flex flex-col gap-1">
                 {badge && (
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 mb-3 rounded-md bg-indigo-500/10 text-[11px] font-semibold text-indigo-400 uppercase tracking-wider border border-indigo-500/20 w-fit">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 mb-3 rounded-md bg-white/5 text-[10px] font-bold text-white/50 uppercase tracking-widest border border-white/10 w-fit">
                         {badge}
                     </div>
                 )}
@@ -26,7 +26,7 @@ export function SectionHeader({ title, description, badge, action }: { title: st
                     {title}
                 </h1>
                 {description && (
-                    <p className="text-slate-400 text-sm mt-1 max-w-2xl">
+                    <p className="text-white/40 text-sm mt-1 max-w-2xl font-medium">
                         {description}
                     </p>
                 )}
@@ -44,10 +44,10 @@ export function SectionHeader({ title, description, badge, action }: { title: st
 // Alias for backwards compatibility during rolling updates
 export const PageHeader = SectionHeader;
 
-// Clean Primary Button (replaces GradientButton)
-export function PrimaryButton({ children, href, onClick, className = '' }: any) {
-    const baseClasses = `group inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${className}`;
-    const primaryClasses = "bg-indigo-600 text-white hover:bg-indigo-500 shadow-sm active:scale-[0.98]";
+// Clean Primary Button
+export function PrimaryButton({ children, href, onClick, className = '', disabled=false }: any) {
+    const baseClasses = `group inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${className} ${disabled ? 'opacity-50 pointer-events-none' : 'active:scale-95'}`;
+    const primaryClasses = "bg-white text-black hover:bg-slate-200 shadow-sm";
 
     if (href) {
         return (
@@ -58,7 +58,7 @@ export function PrimaryButton({ children, href, onClick, className = '' }: any) 
     }
 
     return (
-        <button onClick={onClick} className={`${baseClasses} ${primaryClasses}`}>
+        <button onClick={onClick} disabled={disabled} className={`${baseClasses} ${primaryClasses}`}>
             <span>{children}</span>
         </button>
     );
@@ -66,11 +66,11 @@ export function PrimaryButton({ children, href, onClick, className = '' }: any) 
 
 export const GradientButton = PrimaryButton; // Alias
 
-export function SubtleButton({ children, href, onClick, className = '' }: any) {
-    const baseClasses = `inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border border-white/10 bg-[#111827] text-slate-300 hover:bg-white/5 hover:text-white transition-all duration-200 shadow-sm ${className}`;
+export function SubtleButton({ children, href, onClick, className = '', disabled=false }: any) {
+    const baseClasses = `inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl border border-white/10 bg-white/[0.03] text-white/60 hover:bg-white/[0.08] hover:text-white transition-all duration-200 shadow-sm ${className} ${disabled ? 'opacity-50 pointer-events-none' : 'active:scale-95'}`;
 
     if (href) {
         return <Link href={href} className={baseClasses}>{children}</Link>;
     }
-    return <button onClick={onClick} className={baseClasses}>{children}</button>;
+    return <button onClick={onClick} disabled={disabled} className={baseClasses}>{children}</button>;
 }

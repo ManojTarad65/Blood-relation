@@ -60,7 +60,7 @@ export default function ContactPage() {
                                 </div>
                                 <div>
                                     <h3 className="text-white font-bold mb-1">Email Us</h3>
-                                    <p className="text-slate-400 text-sm">support@rootconnect.app</p>
+                                    <p className="text-slate-400 text-sm">manojtarad65@gmail.com</p>
                                 </div>
                             </div>
 
@@ -70,7 +70,7 @@ export default function ContactPage() {
                                 </div>
                                 <div>
                                     <h3 className="text-white font-bold mb-1">Headquarters</h3>
-                                    <p className="text-slate-400 text-sm">123 Hierarchy Blvd, Suite 400<br />San Francisco, CA 94105</p>
+                                    <p className="text-slate-400 text-sm">BIKANER<br />RAJASTHAN, INDIA</p>
                                 </div>
                             </div>
                         </div>
