@@ -44,7 +44,9 @@ export async function POST() {
         return Response.json({
             riskScore,
             confidenceLevel,
-            detectedDiseases: result.risk_insights || ["AI could not parse results"],
+            detectedDiseases: result.risk_insights && result.risk_insights.length > 0
+                ? result.risk_insights
+                : ["No strong hereditary risks detected"],
             recommendations: [
                 ...(result.recommended_tests || []),
                 ...(result.lifestyle_improvements || [])

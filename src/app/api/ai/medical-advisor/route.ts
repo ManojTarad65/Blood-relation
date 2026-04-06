@@ -1,14 +1,12 @@
-import { generateMedicalAdvice } from "@/lib/ai/health-service"
 import { createClient } from "@/lib/supabase/server"
 
-export async function POST() {
+export async function POST(req: Request) {
     try {
         const supabase = await createClient()
 
         const { data: { user } } = await supabase.auth.getUser()
-        
         if (!user) {
-          return Response.json({ error: "Unauthorized" }, { status: 401 })
+          return Response.json({ advice: "Unauthorized" }, { status: 401 })
         }
 
         const { data: profile } = await supabase
@@ -18,43 +16,65 @@ export async function POST() {
           .single()
 
         if (profile?.subscription_tier !== "PRO" && profile?.subscription_tier !== "premium") {
-          return Response.json({ error: "Requires PRO subscription." }, { status: 403 })
+          return Response.json({ advice: "Requires PRO subscription." }, { status: 403 })
         }
 
-        const { data } = await supabase
-            .from("family_members")
-            .select("*")
+        const { familyData } = await req.json();
 
         // Fail Safe: If no family members exist
-        if (!data || data.length === 0) {
-            // Mapping straight to the UI's existing state layout to prevent crashes
-            const fallbackAdvice = `Insights:\n• No family data available\n\nStrategy:\n• N/A\n\nPlease add family members first.`;
+        if (!familyData || familyData.length === 0) {
             return Response.json({
-                healthAdvice: fallbackAdvice,
-                recommendedTests: [],
-                lifestyleRecommendations: []
+                advice: "No family data found"
             })
         }
 
-        const result = await generateMedicalAdvice(data)
+        let advice = "";
 
-        // Mapping AI output safely into UI expected variables: healthAdvice, recommendedTests, lifestyleRecommendations
-        const insights = result.risk_insights ? `Insights:\n${result.risk_insights.map((i: string) => `• ${i}`).join('\n')}` : '';
-        const strategy = result.preventive_strategy ? `Prevention Strategy:\n${result.preventive_strategy.map((i: string) => `• ${i}`).join('\n')}` : '';
-        const summary = result.summary || '';
+        try {
+            // PRIMARY AI (Gemini)
+            const response = await fetch("https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" + process.env.GEMINI_API_KEY, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: `Give medical advice based on this family history. Provide clear sections for General Advice, Screenings, and Lifestyle. Keep it readable plain text or markdown without complex formatting. History: ${JSON.stringify(familyData)}`
+                        }]
+                    }]
+                }),
+            });
 
-        const combinedAdvice = `${insights}\n\n${strategy}\n\n${summary}`.trim();
+            const data = await response.json();
+            advice = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
+        } catch (err) {
+            console.log("Gemini failed, using fallback...");
+        }
+
+        // 🔥 FALLBACK (IMPORTANT)
+        if (!advice) {
+            advice = generateFallbackAdvice(familyData);
+        }
+
+        return Response.json({ advice });
+
+    } catch (error) {
+        console.error(error)
         return Response.json({
-            healthAdvice: combinedAdvice,
-            recommendedTests: result.recommended_tests || [],
-            lifestyleRecommendations: result.lifestyle_improvements || []
+            advice: "AI insights are currently limited. Showing general recommendations: Maintain a balanced diet, exercise regularly, and consult a doctor for personalized care."
         })
-
-    } catch (e) {
-        console.error(e)
-        return Response.json({
-            error: "Failed to generate medical advice"
-        }, { status: 500 })
     }
+}
+
+function generateFallbackAdvice(data: any) {
+  return `General Health Suggestions:
+- Maintain regular health checkups
+- Focus on diet and exercise
+- Monitor family risk factors
+- Stay hydrated and sleep well
+
+(Advanced AI insights temporarily unavailable)
+`;
 }

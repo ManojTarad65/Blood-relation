@@ -1,30 +1,45 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Stethoscope, FileText, HeartPulse, Loader2, AlertCircle, Info } from 'lucide-react'
-
-type AdvisorResult = {
-    healthAdvice: string
-    recommendedTests: string[]
-    lifestyleRecommendations: string[]
-}
+import { Stethoscope, FileText, HeartPulse, Loader2, Info, UserPlus } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 
 export default function MedicalAdvisorPage() {
+    const supabase = createClient()
     const [loading, setLoading] = useState(false)
-    const [result, setResult] = useState<AdvisorResult | null>(null)
-    const [error, setError] = useState<string | null>(null)
+    const [advice, setAdvice] = useState<string | null>(null)
+    const [familyData, setFamilyData] = useState<any[]>([])
+    const [isLoadingData, setIsLoadingData] = useState(true)
+
+    // Load family data on mount
+    useEffect(() => {
+        async function loadFamilyData() {
+            const { data } = await supabase.from('family_members').select('*')
+            if (data) {
+                setFamilyData(data)
+            }
+            setIsLoadingData(false)
+        }
+        loadFamilyData()
+    }, [])
 
     const generateAdvice = async () => {
         setLoading(true)
-        setError(null)
+        setAdvice(null)
         try {
-            const res = await fetch('/api/ai/medical-advisor', { method: 'POST' })
-            if (!res.ok) throw new Error('Failed to generate medical advice')
+            const res = await fetch('/api/ai/medical-advisor', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ familyData }),
+            })
+
             const data = await res.json()
-            setResult(data)
+            setAdvice(data.advice || 'AI insights are currently limited. Showing general recommendations: Maintain a balanced diet, exercise regularly, and consult a doctor for personalized care.')
         } catch (err: any) {
-            setError(err.message || 'An error occurred.')
+            setAdvice('AI insights are currently limited. Showing general recommendations: Maintain a balanced diet, exercise regularly, and consult a doctor for personalized care.')
         } finally {
             setLoading(false)
         }
@@ -33,24 +48,25 @@ export default function MedicalAdvisorPage() {
     return (
         <div className="min-h-screen pb-12 p-6 md:p-8">
             <div className="max-w-5xl mx-auto space-y-8">
-                
+
                 {/* Unified Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 pb-6 border-b border-white/5 gap-4">
                     <div>
                         <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Medical Advisor</h1>
-                        <p className="text-sm text-white/50">Get personalized health advice, recommended screenings, and lifestyle improvements based on your family's health lineage.</p>
+                        <p className="text-sm text-white/50">Get personalized health advice, recommended screenings, and lifestyle improvements based on your family&apos;s health lineage.</p>
                     </div>
 
                     <button
                         onClick={generateAdvice}
-                        disabled={loading}
-                        className="px-6 py-3 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-[1px] active:scale-95"
+                        disabled={loading || isLoadingData || familyData.length === 0}
+                        className="px-6 py-3 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-[1px] active:scale-95 whitespace-nowrap"
                     >
                         {loading ? <Loader2 size={16} className="animate-spin" /> : <Stethoscope size={16} />}
-                        {loading ? 'Consulting AI...' : 'Generate New Advice'}
+                        {loading ? 'Analyzing...' : 'Generate New Advice'}
                     </button>
                 </div>
 
+                {/* Disclaimer */}
                 <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-4 flex gap-4 text-white/70 text-sm">
                     <Info size={20} className="shrink-0 mt-0.5 text-white/40" />
                     <div>
@@ -59,20 +75,44 @@ export default function MedicalAdvisorPage() {
                     </div>
                 </div>
 
-                {error && (
-                    <motion.div animate={{ opacity: 1, y: 0 }} initial={{ opacity: 0, y: -10 }} className="p-4 bg-white/5 border border-red-500/30 rounded-2xl flex items-start gap-3 text-red-300">
-                        <AlertCircle size={20} className="mt-0.5 shrink-0 text-red-500/80" />
-                        <p className="text-sm">{error}</p>
-                    </motion.div>
-                )}
-
-                {!result && !loading && !error && (
-                    <div className="h-64 border border-dashed border-white/10 rounded-3xl flex flex-col items-center justify-center text-white/40 gap-4 bg-white/[0.02]">
-                        <FileText size={48} className="opacity-30" />
-                        <p className="text-sm px-4 text-center">Click "Generate New Advice" to compile your personalized AI medical insights panel.</p>
+                {/* Loading data spinner */}
+                {isLoadingData && (
+                    <div className="h-40 flex items-center justify-center">
+                        <Loader2 size={32} className="animate-spin text-white/30" />
                     </div>
                 )}
 
+                {/* Empty state — prompt to generate */}
+                {!advice && !loading && !isLoadingData && familyData.length > 0 && (
+                    <div className="h-64 border border-dashed border-white/10 rounded-3xl flex flex-col items-center justify-center text-white/40 gap-4 bg-white/[0.02]">
+                        <FileText size={48} className="opacity-30" />
+                        <p className="text-sm px-4 text-center">Click &quot;Generate New Advice&quot; to compile your personalized AI medical insights panel.</p>
+                    </div>
+                )}
+
+                {/* NO DATA FALLBACK */}
+                {!isLoadingData && familyData.length === 0 && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="h-64 border border-white/10 rounded-3xl flex flex-col items-center justify-center text-white gap-4 bg-white/[0.02] shadow-xl relative overflow-hidden"
+                    >
+                        <div className="w-16 h-16 bg-white/5 flex items-center justify-center rounded-2xl border border-white/10 mb-2">
+                            <Info size={32} className="text-white/50" />
+                        </div>
+                        <p className="font-medium text-white/90">No family data found.</p>
+                        <p className="text-sm text-white/50 mb-2">Add members to get personalized insights.</p>
+                        <a
+                            href="/dashboard/tree"
+                            className="px-5 py-2.5 bg-white text-black hover:bg-slate-200 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 active:scale-95 shadow-lg"
+                        >
+                            <UserPlus size={16} />
+                            Add Family Member
+                        </a>
+                    </motion.div>
+                )}
+
+                {/* Loading spinner (generating advice) */}
                 {loading && (
                     <div className="h-64 border border-white/5 rounded-3xl flex flex-col items-center justify-center text-white gap-6 bg-white/[0.03] shadow-xl overflow-hidden relative">
                         <Loader2 size={48} className="animate-spin text-white/40" />
@@ -83,69 +123,25 @@ export default function MedicalAdvisorPage() {
                     </div>
                 )}
 
-                {result && !loading && (
+                {/* AI Output */}
+                {advice && !loading && (
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                        className="flex flex-col gap-6"
                     >
-                        {/* Overall Advice Panel */}
-                        <div className="md:col-span-2 bg-white/[0.03] border border-white/[0.08] rounded-2xl p-6 hover:-translate-y-1 hover:border-white/20 transition-all duration-300 shadow-[0_10px_30px_rgba(0,0,0,0.4)] relative overflow-hidden">
-                            <h3 className="text-white font-semibold mb-4 text-lg">General Health Advice</h3>
-                            <p className="text-white/65 leading-relaxed text-sm">
-                                {result.healthAdvice}
-                            </p>
-                        </div>
-
-                        {/* Recommended Tests */}
-                        <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-6 hover:-translate-y-1 hover:border-white/20 transition-all duration-300 shadow-[0_10px_30px_rgba(0,0,0,0.4)] flex flex-col">
-                            <h3 className="text-white font-semibold mb-6 flex items-center gap-2">
-                                <FileText size={18} className="text-white/70" />
-                                Recommended Screenings & Tests
+                        <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-6 md:p-8 hover:border-white/20 transition-all duration-300 shadow-[0_10px_30px_rgba(0,0,0,0.4)] relative overflow-hidden">
+                            <h3 className="text-white font-semibold mb-6 text-xl flex items-center gap-3">
+                                <HeartPulse size={24} className="text-white/70" />
+                                Expert AI Advisor Output
                             </h3>
-                            {result.recommendedTests.length > 0 ? (
-                                <ul className="space-y-4 flex-1">
-                                    {result.recommendedTests.map((test, idx) => (
-                                        <li key={idx} className="flex gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.06] transition-colors">
-                                            <div className="w-8 h-8 rounded-full bg-white/10 text-white/80 flex items-center justify-center shrink-0">
-                                                <Stethoscope size={14} />
-                                            </div>
-                                            <div className="flex flex-col justify-center">
-                                                <span className="text-sm font-medium text-white/90">{test}</span>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className="text-sm text-white/40 flex-1 flex items-center">No specific screenings recommended currently.</p>
-                            )}
-                        </div>
-
-                        {/* Lifestyle Improvements */}
-                        <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-6 hover:-translate-y-1 hover:border-white/20 transition-all duration-300 shadow-[0_10px_30px_rgba(0,0,0,0.4)] flex flex-col">
-                            <h3 className="text-white font-semibold mb-6 flex items-center gap-2">
-                                <HeartPulse size={18} className="text-white/70" />
-                                Lifestyle Improvements
-                            </h3>
-                            {result.lifestyleRecommendations.length > 0 ? (
-                                <ul className="space-y-4 flex-1">
-                                    {result.lifestyleRecommendations.map((rec, idx) => (
-                                        <li key={idx} className="flex gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.06] transition-colors">
-                                            <div className="w-8 h-8 rounded-full bg-white/10 text-white/80 flex items-center justify-center shrink-0">
-                                                <HeartPulse size={14} />
-                                            </div>
-                                            <div className="flex flex-col justify-center">
-                                                <span className="text-sm font-medium text-white/90">{rec}</span>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className="text-sm text-white/40 flex-1 flex items-center">Maintain your current healthy lifestyle routines.</p>
-                            )}
+                            <div className="text-white/70 leading-relaxed text-[15px] whitespace-pre-wrap">
+                                {advice}
+                            </div>
                         </div>
                     </motion.div>
                 )}
+
             </div>
         </div>
     )

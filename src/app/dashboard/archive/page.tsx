@@ -1,12 +1,13 @@
 'use client'
 
 import { Camera, Image as ImageIcon, Mic, BookHeart, Plus, Clock, X, FileImage, Sparkles } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { createClient } from '@/lib/supabase/client'
 
 type ArchiveItem = {
-    id: number;
-    year: string;
+    id: string | number;
+    year?: string;
     title: string;
     type: string;
     description: string;
@@ -43,20 +44,114 @@ const MOCK_ARCHIVES: ArchiveItem[] = [
 ]
 
 export default function CulturalArchivePage() {
+    const supabase = createClient()
     const [activeTab, setActiveTab] = useState('all')
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [memories, setMemories] = useState(MOCK_ARCHIVES)
+    const [memories, setMemories] = useState<ArchiveItem[]>([])
+    
+    // Form States
+    const [title, setTitle] = useState('')
+    const [date, setDate] = useState('')
+    const [type, setType] = useState('photo')
+    const [description, setDescription] = useState('')
+    const [file, setFile] = useState<File | null>(null)
+    const [isUploading, setIsUploading] = useState(false)
+
+    // Fetch Memories on Mount
+    const fetchMemories = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            setMemories(MOCK_ARCHIVES as ArchiveItem[]);
+            return;
+        }
+
+        const { data, error } = await supabase
+            .from('memories')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false });
+
+        if (data && data.length > 0) {
+            // Map the db fields back to ArchiveItem fields
+            // The table has both the old memory-gallery ones AND the new ones via migration
+            const mapped = data.filter(m => m.title).map(m => ({
+                id: m.id,
+                year: m.year || m.date?.split('-')[0] || 'Unknown',
+                title: m.title,
+                type: m.type || 'photo',
+                description: m.description || '',
+                date: m.date || '',
+                imageUrl: m.media_url || m.image_url || null
+            })) as ArchiveItem[];
+            
+            // If mapping exists, mix with mock or just replace
+            setMemories([...mapped, ...(MOCK_ARCHIVES as ArchiveItem[])]);
+        } else {
+            setMemories(MOCK_ARCHIVES as ArchiveItem[]);
+        }
+    }
+
+    useEffect(() => {
+        fetchMemories();
+    }, []);
+
+    const resetForm = () => {
+        setTitle('');
+        setDate('');
+        setType('photo');
+        setDescription('');
+        setFile(null);
+        setIsUploading(false);
+    }
+
+    const handleSubmit = async (e: any) => {
+        e.preventDefault();
+      
+        try {
+          setIsUploading(true);
+          const formData = new FormData();
+      
+          formData.append("title", title);
+          formData.append("date", date);
+          formData.append("type", type);
+          formData.append("description", description);
+      
+          if (file) {
+            formData.append("file", file);
+          }
+      
+          const res = await fetch("/api/memory", {
+            method: "POST",
+            body: formData,
+          });
+      
+          const data = await res.json();
+      
+          if (!res.ok) throw new Error(data.message);
+      
+          alert("Memory saved ✅");
+          
+          setIsModalOpen(false);
+          resetForm();
+          fetchMemories(); // Refresh data
+      
+        } catch (err) {
+          console.error(err);
+          alert("Failed to save memory ❌");
+          setIsUploading(false);
+        }
+    };
 
     const filteredMemories = memories.filter(a => activeTab === 'all' || a.type === activeTab)
 
     return (
-        <div className="min-h-screen pb-12 p-4 sm:p-6 md:p-8">
+        <div className="min-h-screen pb-12 p-4 sm:p-6 md:p-8 overflow-x-hidden">
             <div className="max-w-5xl mx-auto flex flex-col gap-10 relative">
 
                 {/* Unified Header */}
-                <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 border-b border-[rgba(255,255,255,0.05)] pb-8 relative z-20">
+                <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-[rgba(255,255,255,0.05)] pb-6 sm:pb-8 relative z-20">
                     <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-                        <h1 className="text-3xl font-bold text-white tracking-tight mb-2 flex items-center gap-3">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-2 flex items-center gap-3">
                             <Sparkles className="text-white/60 w-6 h-6" />
                             Cultural Archive
                         </h1>
@@ -66,7 +161,7 @@ export default function CulturalArchivePage() {
                     <motion.button
                         initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
                         onClick={() => setIsModalOpen(true)}
-                        className="bg-white hover:brightness-110 text-black px-6 py-3 rounded-lg transition-all flex items-center justify-center gap-2 font-medium active:scale-95 text-sm shrink-0 shadow-lg hover:shadow-xl w-full sm:w-auto"
+                        className="bg-white hover:brightness-110 text-black px-5 py-2.5 rounded-lg transition-all flex items-center justify-center gap-2 font-medium active:scale-95 text-sm shrink-0 shadow-lg hover:shadow-xl w-full sm:w-auto min-h-[44px]"
                     >
                         <Plus size={18} /> Add Memory
                     </motion.button>
@@ -218,7 +313,7 @@ export default function CulturalArchivePage() {
                             initial={{ opacity: 0, scale: 0.95, y: 10 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                            className="relative w-full max-w-lg bg-[#0F1424] border border-[rgba(255,255,255,0.1)] rounded-2xl shadow-2xl overflow-hidden"
+                            className="relative w-full max-w-lg mx-auto bg-[#0F1424] border border-[rgba(255,255,255,0.1)] rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
                         >
                             <div className="flex items-center justify-between p-6 border-b border-[rgba(255,255,255,0.1)]">
                                 <h2 className="text-xl font-semibold text-white">Add New Memory</h2>
@@ -227,19 +322,20 @@ export default function CulturalArchivePage() {
                                 </button>
                             </div>
                             
-                            <div className="p-6 flex flex-col gap-5">
+                            <div className="p-4 sm:p-6 flex flex-col gap-5 overflow-y-auto flex-1">
+                                <form id="add-memory-form" onSubmit={handleSubmit} className="flex flex-col gap-5">
                                 <div>
                                     <label className="text-sm font-medium text-[rgba(255,255,255,0.7)] block mb-1.5">Title</label>
-                                    <input type="text" className="w-full bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] rounded-xl px-4 py-3 text-white focus:border-[rgba(255,255,255,0.3)] focus:shadow-[0_0_15px_rgba(255,255,255,0.05)] outline-none transition-all placeholder:text-[rgba(255,255,255,0.2)]" placeholder="E.g., Summer Trip '95" />
+                                    <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required className="w-full bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] rounded-xl px-4 py-3 text-white focus:border-[rgba(255,255,255,0.3)] focus:shadow-[0_0_15px_rgba(255,255,255,0.05)] outline-none transition-all placeholder:text-[rgba(255,255,255,0.2)]" placeholder="E.g., Summer Trip '95" />
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label className="text-sm font-medium text-[rgba(255,255,255,0.7)] block mb-1.5">Date</label>
-                                        <input type="date" className="w-full bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] rounded-xl px-4 py-3 text-white focus:border-[rgba(255,255,255,0.3)] focus:shadow-[0_0_15px_rgba(255,255,255,0.05)] outline-none transition-all block" style={{ colorScheme: 'dark' }} />
+                                        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required className="w-full bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] rounded-xl px-4 py-3 text-white focus:border-[rgba(255,255,255,0.3)] focus:shadow-[0_0_15px_rgba(255,255,255,0.05)] outline-none transition-all block" style={{ colorScheme: 'dark' }} />
                                     </div>
                                     <div>
                                         <label className="text-sm font-medium text-[rgba(255,255,255,0.7)] block mb-1.5">Type</label>
-                                        <select className="w-full bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] rounded-xl px-4 py-3 text-white outline-none transition-all appearance-none cursor-pointer">
+                                        <select value={type} onChange={(e) => setType(e.target.value)} className="w-full bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] rounded-xl px-4 py-3 text-white outline-none transition-all appearance-none cursor-pointer">
                                             <option value="photo" className="bg-[#0F1424]">Photo</option>
                                             <option value="audio" className="bg-[#0F1424]">Audio</option>
                                             <option value="tradition" className="bg-[#0F1424]">Tradition</option>
@@ -248,24 +344,30 @@ export default function CulturalArchivePage() {
                                 </div>
                                 <div>
                                     <label className="text-sm font-medium text-[rgba(255,255,255,0.7)] block mb-1.5">Description</label>
-                                    <textarea rows={3} className="w-full bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] rounded-xl px-4 py-3 text-white focus:border-[rgba(255,255,255,0.3)] focus:shadow-[0_0_15px_rgba(255,255,255,0.05)] outline-none transition-all placeholder:text-[rgba(255,255,255,0.2)] resize-none" placeholder="Tell the story behind this memory..."></textarea>
+                                    <textarea value={description} onChange={(e) => setDescription(e.target.value)} required rows={3} className="w-full bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] rounded-xl px-4 py-3 text-white focus:border-[rgba(255,255,255,0.3)] focus:shadow-[0_0_15px_rgba(255,255,255,0.05)] outline-none transition-all placeholder:text-[rgba(255,255,255,0.2)] resize-none" placeholder="Tell the story behind this memory..."></textarea>
                                 </div>
                                 <div>
                                     <label className="text-sm font-medium text-[rgba(255,255,255,0.7)] block mb-1.5">Media (Optional)</label>
-                                    <div className="w-full border border-dashed border-[rgba(255,255,255,0.2)] rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-[rgba(255,255,255,0.02)] transition-colors group">
+                                    <div className="w-full relative border border-dashed border-[rgba(255,255,255,0.2)] rounded-xl p-6 flex flex-col items-center justify-center text-center hover:bg-[rgba(255,255,255,0.02)] transition-colors group">
                                         <Camera className="w-8 h-8 text-[rgba(255,255,255,0.3)] mb-2 group-hover:text-[rgba(255,255,255,0.5)] transition-colors" />
-                                        <span className="text-sm text-[rgba(255,255,255,0.5)] group-hover:text-[rgba(255,255,255,0.7)] text-center">Click to upload image or audio</span>
+                                        <span className="text-sm text-[rgba(255,255,255,0.5)] group-hover:text-[rgba(255,255,255,0.7)] text-center">
+                                            {file ? file.name : "Click to upload image or audio"}
+                                        </span>
+                                        <input type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                                     </div>
                                 </div>
+                                </form>
                             </div>
 
-                            <div className="p-5 border-t border-[rgba(255,255,255,0.1)] flex justify-end gap-3 bg-[rgba(255,255,255,0.02)]">
-                                <button onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 rounded-lg text-[rgba(255,255,255,0.6)] hover:text-white hover:bg-white/5 font-medium transition-colors text-sm">Cancel</button>
+                            <div className="p-4 sm:p-5 border-t border-[rgba(255,255,255,0.1)] flex flex-col sm:flex-row justify-end gap-3 bg-[rgba(255,255,255,0.02)] shrink-0">
+                                <button onClick={() => { setIsModalOpen(false); resetForm(); }} className="flex-1 sm:flex-none px-5 py-2.5 min-h-[44px] rounded-lg text-[rgba(255,255,255,0.6)] hover:text-white hover:bg-white/5 font-medium transition-colors text-sm">Cancel</button>
                                 <button 
-                                    onClick={() => setIsModalOpen(false)} 
-                                    className="px-6 py-2.5 bg-white text-black rounded-lg font-medium hover:brightness-110 active:scale-95 transition-all text-sm shadow-md"
+                                    type="submit"
+                                    form="add-memory-form"
+                                    disabled={isUploading}
+                                    className="flex-1 sm:flex-none px-6 py-2.5 min-h-[44px] bg-white text-black rounded-lg font-medium hover:brightness-110 active:scale-95 transition-all text-sm shadow-md"
                                 >
-                                    Save Memory
+                                    {isUploading ? 'Saving...' : 'Save Memory'}
                                 </button>
                             </div>
                         </motion.div>

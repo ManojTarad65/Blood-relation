@@ -57,7 +57,7 @@ export default function DashboardPage() {
   if (loading) return null
 
   return (
-    <div className="relative min-h-screen text-white px-8 py-16 overflow-hidden bg-[radial-gradient(circle_at_85%_15%,rgba(255,255,255,0.06),transparent_40%),radial-gradient(circle_at_20%_80%,rgba(255,255,255,0.03),transparent_50%),linear-gradient(180deg,#0B0F1A_0%,#0D1323_100%)] shadow-[inset_0_0_100px_rgba(0,0,0,0.6)]">
+    <div className="relative min-h-screen text-white px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 overflow-x-hidden bg-[radial-gradient(circle_at_85%_15%,rgba(255,255,255,0.06),transparent_40%),radial-gradient(circle_at_20%_80%,rgba(255,255,255,0.03),transparent_50%),linear-gradient(180deg,#0B0F1A_0%,#0D1323_100%)] shadow-[inset_0_0_100px_rgba(0,0,0,0.6)]">
       
       <div className="relative z-10 max-w-5xl mx-auto flex flex-col gap-16">
 
@@ -71,18 +71,18 @@ export default function DashboardPage() {
             <span className="text-xs uppercase tracking-widest font-semibold">Welcome back, {userName}</span>
           </div>
 
-          <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60 mb-6 drop-shadow-sm">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60 mb-4 sm:mb-6 drop-shadow-sm">
             Your Family Intelligence Hub
           </h1>
 
-          <p className="text-white/50 text-lg md:text-xl font-medium max-w-2xl mb-10">
+          <p className="text-white/50 text-base sm:text-lg md:text-xl font-medium max-w-2xl mb-8 sm:mb-10">
             Track lineage, health insights, and memories in one place.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full sm:w-auto">
             <Link
               href="/dashboard/trees"
-              className="flex items-center gap-2 bg-white/[0.1] border border-white/20 text-white px-8 py-3.5 rounded-xl font-semibold hover:scale-[1.03] hover:shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:bg-white/[0.15] transition-all duration-300 shadow-lg"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white/[0.1] border border-white/20 text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl font-semibold hover:scale-[1.03] hover:shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:bg-white/[0.15] transition-all duration-300 shadow-lg min-h-[44px]"
             >
               <Plus size={18} />
               Create New Tree
@@ -90,7 +90,7 @@ export default function DashboardPage() {
 
             <Link
               href="#features"
-              className="flex items-center gap-2 bg-transparent border border-white/10 text-white/70 px-8 py-3.5 rounded-xl font-semibold hover:bg-white/[0.03] hover:text-white transition-all duration-300"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-transparent border border-white/10 text-white/70 px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl font-semibold hover:bg-white/[0.03] hover:text-white transition-all duration-300 min-h-[44px]"
             >
               <Compass size={18} />
               Explore Insights
@@ -131,7 +131,7 @@ export default function DashboardPage() {
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             <ActionCard
               icon={<Brain size={20} />}
               title="AI Chatbot"
@@ -162,9 +162,9 @@ export default function DashboardPage() {
         {/* TREES (Legacy Clusters) */}
         <section className="pt-4 pb-12">
           
-          <div className="flex justify-between items-end mb-8 border-b border-white/5 pb-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 sm:mb-8 border-b border-white/5 pb-4 gap-3">
             <div>
-              <h2 className="text-2xl font-semibold text-white">Legacy Clusters</h2>
+              <h2 className="text-xl sm:text-2xl font-semibold text-white">Legacy Clusters</h2>
               <p className="text-sm text-white/50 mt-1">Your structured family records.</p>
             </div>
             <Link
@@ -175,7 +175,7 @@ export default function DashboardPage() {
             </Link>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
             {trees.map((tree, i) => (
               <motion.div
                 key={tree.id}

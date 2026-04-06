@@ -32,7 +32,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }, [])
 
     return (
-        <div className="flex h-screen overflow-hidden bg-[#0B0F1A] font-outfit text-white relative selection:bg-white/20">
+        <div className="flex h-screen overflow-hidden bg-[#0B0F1A] font-outfit text-white relative selection:bg-white/20 overflow-x-hidden">
 
             {/* Mobile Blur Overlay */}
             {isMobileOpen && (
@@ -47,12 +47,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 ${isMobileOpen ? 'translate-x-0 w-64' : '-translate-x-full w-64'} 
                 md:relative md:translate-x-0 md:w-20 lg:w-64`}
             >
-                <div className="flex items-center justify-between px-6 py-6 h-16 shrink-0 md:hidden lg:flex">
-                     {isMobileOpen && (
-                        <button onClick={() => setIsMobileOpen(false)} className="text-white/40 hover:text-white md:hidden ml-auto">
-                            <X size={20} />
-                        </button>
-                     )}
+                <div className="flex items-center justify-between px-4 py-4 h-14 shrink-0 border-b border-white/5 md:hidden">
+                    <span className="text-sm font-bold tracking-widest text-white/70 uppercase">RootConnect</span>
+                    <button onClick={() => setIsMobileOpen(false)} className="min-h-[44px] min-w-[44px] flex items-center justify-center text-white/40 hover:text-white transition-colors">
+                        <X size={20} />
+                    </button>
                 </div>
 
                 {/* Navigation Drop-zone */}
@@ -101,12 +100,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative z-10 w-full">
                 
                 {/* Mobile Header Toggle */}
-                <header className="md:hidden flex items-center justify-between h-16 px-6 border-b border-white/5 bg-[#05070A]/80 backdrop-blur-md shrink-0 transition-colors">
-                    <button onClick={() => setIsMobileOpen(true)} className="text-white/60 hover:text-white transition-colors">
-                        <Menu size={24} />
+                <header className="md:hidden flex items-center justify-between h-14 px-4 border-b border-white/5 bg-[#05070A]/90 backdrop-blur-md shrink-0">
+                    <button onClick={() => setIsMobileOpen(true)} className="min-h-[44px] min-w-[44px] flex items-center justify-center text-white/60 hover:text-white transition-colors -ml-2">
+                        <Menu size={22} />
                     </button>
-                    <span className="text-sm font-semibold tracking-widest text-white/80 uppercase">RootConnect</span>
-                    <div className="w-6" /> {/* spacer */}
+                    <span className="text-sm font-bold tracking-widest text-white/80 uppercase">RootConnect</span>
+                    <div className="w-[44px]" />
                 </header>
 
                 <main className="flex-1 overflow-y-auto relative w-full">
@@ -142,7 +141,7 @@ function SidebarItem({ href, icon, label, active, onClick }: { href: string, ico
             href={href}
             prefetch={true}
             onClick={onClick}
-            className={`group flex items-center gap-[10px] px-[14px] py-[10px] rounded-xl transition-all duration-200 text-sm font-medium relative outline-none
+            className={`group flex items-center gap-[10px] px-[14px] min-h-[44px] rounded-xl transition-all duration-200 text-sm font-medium relative outline-none
         ${active
                     ? 'bg-white/[0.08] text-white shadow-[inset_0_0_10px_rgba(255,255,255,0.02)]'
                     : 'text-white/60 bg-transparent hover:bg-white/[0.04] hover:text-white'

@@ -175,20 +175,19 @@ export default function MemoryGalleryPage() {
   if (loading) return null;
 
   return (
-    <div className="min-h-screen pb-12 p-6 md:p-8">
+    <div className="min-h-screen pb-12 p-4 sm:p-6 md:p-8 overflow-x-hidden">
 
       <div className="max-w-7xl mx-auto flex flex-col gap-8">
 
-        {/* HEADER UNIFIED */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-2 pb-6 border-b border-white/5 gap-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-2 pb-5 sm:pb-6 border-b border-white/5 gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Memory Vault</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white mb-2">Memory Vault</h1>
             <p className="text-sm text-white/50">Organize and manage your ancestral image archives.</p>
           </div>
 
           <button
             onClick={() => setIsUploadOpen(true)}
-            className="bg-white hover:bg-white/90 text-black px-6 py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 font-semibold active:scale-95 whitespace-nowrap text-sm shrink-0"
+            className="w-full sm:w-auto bg-white hover:bg-white/90 text-black px-5 py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 font-semibold active:scale-95 whitespace-nowrap text-sm shrink-0 min-h-[44px]"
           >
             <ImagePlus size={16} />
             Add Memory
@@ -232,7 +231,7 @@ export default function MemoryGalleryPage() {
                 <p className="text-white/40 text-sm">Upload visual records to begin populating your vault.</p>
             </div>
         ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {filteredMemories.map(mem => (
                 <motion.div
                 key={mem.id}
