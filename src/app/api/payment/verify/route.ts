@@ -12,16 +12,7 @@ export async function POST(req: Request) {
     .digest("hex")
 
   if (generated_signature === razorpay_signature) {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (user) {
-      await supabase
-        .from("users")
-        .update({ subscription_tier: "PRO" })
-        .eq("id", user.id)
-    }
-
+    // Database updates are exclusively handled via /api/webhook for security.
     return Response.json({
       success: true
     })

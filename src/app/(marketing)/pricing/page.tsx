@@ -72,9 +72,15 @@ export default function PricingPage() {
 
       const res = await fetch("/api/payment/create-order", {
         method: "POST"
-      })
+      });
 
-      const order = await res.json()
+      if (!res.ok) {
+        console.error("Failed to create Razorpay Order on server");
+        setLoading(false);
+        return;
+      }
+
+      const order = await res.json();
 
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
@@ -84,31 +90,44 @@ export default function PricingPage() {
         description: "Premium Plan",
         order_id: order.id,
         handler: async function (response: any) {
-          const verify = await fetch("/api/payment/verify", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify(response)
-          })
+          console.log("Processing success handler:", response);
+          try {
+            const verify = await fetch("/api/payment/verify", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(response)
+            });
 
-          const data = await verify.json()
+            const data = await verify.json();
 
-          if (data.success) {
-            alert("Payment successful 🎉")
-            window.location.reload()
+            if (data.success) {
+              alert("Payment successful 🎉");
+              window.location.reload();
+            } else {
+              console.error("Verification failed remotely");
+            }
+          } catch(e) {
+            console.error("Error executing backend verification:", e);
           }
         }
-      }
+      };
 
-      const rzp = new window.Razorpay(options)
-      rzp.open()
+      const rzp = new window.Razorpay(options);
+
+      rzp.on("payment.failed", function (response: any) {
+        console.error("Payment Failure Debug:", response.error);
+        alert("Payment failed: " + response.error.description);
+      });
+
+      rzp.open();
     } catch (error) {
-      alert("Checkout unavailable. Please try again.")
+      console.error("Checkout initiation caught error:", error);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="relative min-h-screen bg-[#0B0F19] text-white px-6 md:px-12 py-32 overflow-hidden">
