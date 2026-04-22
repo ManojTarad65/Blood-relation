@@ -6,7 +6,7 @@ import './globals.css';
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' });
 
 export const metadata: Metadata = {
-  title: 'RootConnect | Generations Reconnected',
+  title: 'Blood Relation | Generations Reconnected',
   description: 'AI-powered digital family trees bringing generations together with health intelligence and cultural archives.',
 };
 

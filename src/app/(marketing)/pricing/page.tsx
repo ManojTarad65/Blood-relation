@@ -26,7 +26,7 @@ const TIERS = [
   {
     id: 'premium',
     name: 'Premium AI',
-    price: { monthly: 19, yearly: 15 },
+    price: { monthly: 99, yearly: 999 },
     tag: 'Most Popular',
     description:
       'For families who want AI-powered hereditary intelligence & predictive insights.',
@@ -152,7 +152,7 @@ export default function PricingPage() {
             </span>
           </h1>
           <p className="text-slate-400 text-lg">
-            RootConnect monetizes through subscription tiers and AI-based
+            Blood Relation  monetizes through subscription tiers and AI-based
             predictive health reports.
           </p>
         </motion.div>

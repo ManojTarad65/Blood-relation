@@ -17,7 +17,7 @@ export default async function Navbar({ className = "sticky top-0" }: { className
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center">
                     <Image src="/images/logo.png" alt="Logo" width={24} height={24} className='invert'/>
                 </div>
-                <span className="text-xl font-bold text-white tracking-tight">RootConnect</span>
+                <span className="text-xl font-bold text-white tracking-tight">Blood Relation</span>
             </Link>
 
             <div className="hidden md:flex items-center gap-8 text-sm font-medium">

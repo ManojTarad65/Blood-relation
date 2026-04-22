@@ -70,6 +70,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     <SidebarItem href="/dashboard/ai/health" icon={<Dna size={18} />} label="Health Predictor" active={pathname.startsWith('/dashboard/ai/health')} onClick={() => setIsMobileOpen(false)} />
                     <SidebarItem href="/dashboard/ai/advisor" icon={<Stethoscope size={18} />} label="Medical Advisor" active={pathname.startsWith('/dashboard/ai/advisor')} onClick={() => setIsMobileOpen(false)} />
 
+
+
                     <div className="px-3 text-[10px] font-bold text-white/40 uppercase tracking-[0.1em] mt-6 mb-2 block md:hidden lg:block">Account</div>
                     <SidebarItem href="/pricing" icon={<DollarSign size={18} />} label="Pricing" active={pathname === '/dashboard/pricing' || pathname === '/pricing'} onClick={() => setIsMobileOpen(false)} />
                     <SidebarItem href="/dashboard/profile" icon={<UserCircle size={18} />} label="Profile" active={pathname === '/dashboard/profile'} onClick={() => setIsMobileOpen(false)} />

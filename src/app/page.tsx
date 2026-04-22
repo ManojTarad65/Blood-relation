@@ -112,7 +112,7 @@ export default function Page() {
                 </div>
 
                 <h1 className="text-6xl md:text-7xl font-light">
-                    RootConnect
+                    Blood Relation
                 </h1>
 
                 <h2 className="text-4xl md:text-5xl text-white/70 mt-4">
